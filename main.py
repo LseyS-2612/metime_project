@@ -5,7 +5,7 @@ def button_callback():
 app =customtkinter.CTk()
 app.geometry("400x150")
 
-button =customtkinter.CTkButton(app,text="My Button",command=button_callback)
+button =customtkinter.CTkButton(app,text="My Button",command=button_callback,text_color="#2596be")
 button.pack(padx=20,pady=20)
 
 app.mainloop()
