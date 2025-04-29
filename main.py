@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import customtkinter as ctk
 import json
 import os
@@ -302,16 +302,3 @@ if __name__ == "__main__":
     app.mainloop()
     settings = load_settings()
     ctk.set_appearance_mode(settings.get("theme", "dark"))
-=======
-import customtkinter
-def button_callback():
-    print("Butona Tıklandı")
-    
-app =customtkinter.CTk()
-app.geometry("400x150")
-
-button =customtkinter.CTkButton(app,text="My Button",command=button_callback,text_color="#2596be")
-button.pack(padx=20,pady=20)
-
-app.mainloop()
->>>>>>> 529e2a0af9a4c6d2d2e00b94ed5d6fb94ba6bb71
