@@ -57,7 +57,7 @@ class MeditationScreen(ctk.CTkFrame):
         )
         self.volume_slider.set(0.5)  # Varsayılan orta seviye
         self.volume_slider.pack(pady=10)
-        self.volume_frame.place(x=555, y=30)  # Ses simgesinin hemen altına yerleştir
+        self.volume_frame.place(x=555, y=35)  # Ses simgesinin hemen altına yerleştir
 
         # Slider başlangıçta gizli
         self.volume_frame.place_forget()
@@ -79,7 +79,7 @@ class MeditationScreen(ctk.CTkFrame):
         if self.hide_slider_job:
             self.after_cancel(self.hide_slider_job)  # Gizleme işlemini iptal et
             self.hide_slider_job = None
-        self.volume_frame.place(x=555, y=30)  # Ses simgesinin hemen altına yerleştir
+        self.volume_frame.place(x=555, y=35)  # Ses simgesinin hemen altına yerleştir
 
     def hide_volume_slider_delayed(self, event=None):
         """Slider'ı gecikmeli olarak gizle."""

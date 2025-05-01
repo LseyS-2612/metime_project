@@ -49,5 +49,3 @@ class SettingsScreen(ctk.CTkFrame):
             ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/purple_gray_theme.json")
         elif new_settings["theme"] == "Orange & Gray":
             ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/orange_gray_theme.json")
-
-
