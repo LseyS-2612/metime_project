@@ -12,24 +12,29 @@ class SettingsScreen(ctk.CTkFrame):
 
         # Tema seçimi
         ctk.CTkLabel(self, text="Tema Seç:", font=("Arial", 14)).pack(pady=10)
-
-        self.theme_var = ctk.StringVar(value=self.settings.get("theme", "dark"))
-        theme_menu = ctk.CTkOptionMenu(self, variable=self.theme_var, values=["light", "dark"])
-        theme_menu.pack()
+        self.theme_var = ctk.StringVar(value=self.settings.get("theme", "Purple & Gray"))
+        theme_menu = ctk.CTkOptionMenu(self, variable=self.theme_var, values=["Purple & Gray", "Orange & Gray"])
+        theme_menu.pack(pady=10)
 
         # Kullanıcı adı
         ctk.CTkLabel(self, text="Adınız:", font=("Arial", 14)).pack(pady=10)
         self.username_entry = ctk.CTkEntry(self)
         self.username_entry.insert(0, self.settings.get("username", "Kullanıcı"))
-        self.username_entry.pack()
+        self.username_entry.pack(pady=10)
 
         # Kaydet butonu
         save_btn = ctk.CTkButton(self, text="💾 Kaydet", command=self.save_and_apply)
-        save_btn.pack(pady=20)
+        save_btn.pack(pady=5)
 
-        # Geri dön
-        back_btn = ctk.CTkButton(self, text="⬅️ Ana Sayfa", command=go_home)
-        back_btn.pack(pady=10)
+        # Geri dön butonu (sadece ikon olarak sol üst köşeye taşındı)
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",  # Sadece ikon
+            width=40,  # Buton genişliği
+            height=40,  # Buton yüksekliği
+            command=go_home
+        )
+        back_btn.place(x=5, y=5)  # Sol üst köşeye yerleştir
 
     def save_and_apply(self):
         # Güncel ayarları kaydet
@@ -40,4 +45,9 @@ class SettingsScreen(ctk.CTkFrame):
         save_settings(new_settings)
 
         # Tema anlık olarak uygula
-        ctk.set_appearance_mode(new_settings["theme"])
+        if new_settings["theme"] == "Purple & Gray":
+            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/purple_gray_theme.json")
+        elif new_settings["theme"] == "Orange & Gray":
+            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/orange_gray_theme.json")
+
+

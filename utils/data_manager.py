@@ -7,7 +7,7 @@ MEDITATION_DATA_PATH = "meditation_data.json"
 
 def load_settings():
     if not os.path.exists(SETTINGS_PATH):
-        return {"theme": "dark", "username": "Kullanıcı"}
+        return {"theme": "Purple & Gray", "username": "Kullanıcı"}
     with open(SETTINGS_PATH, "r") as f:
         return json.load(f)
 

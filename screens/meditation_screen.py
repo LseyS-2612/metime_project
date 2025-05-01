@@ -1,9 +1,12 @@
-import customtkinter as ctk
-from utils.data_manager import load_settings, save_settings
-import pygame
-import threading
 import os
 import time
+import threading
+import customtkinter as ctk
+import pygame
+from screens.home_screen import HomeScreen
+from screens.settings_screen import SettingsScreen
+from utils.data_manager import load_settings, save_settings, load_meditation_data, save_meditation_data, update_streak
+
 
 class MeditationScreen(ctk.CTkFrame):
     def __init__(self, master, go_home, duration):
@@ -32,12 +35,13 @@ class MeditationScreen(ctk.CTkFrame):
         self.start_pause_btn.pack(pady=10)
 
         # Geri butonu
-        self.back_btn = ctk.CTkButton(self, text="⏹️ Bitir ve Dön", command=self.stop_and_return)
+        self.back_btn = ctk.CTkButton(self, text="⬅️", command=self.stop_and_return, width=40, height=40,fg_color="#212121", hover_color="#312e33")
         self.back_btn.pack(pady=10)
+        self.back_btn.place(x=5, y=5)  # Sol üst köşeye yerleştir
 
         # Ses simgesi
         self.volume_icon = ctk.CTkLabel(self, text="🔊", font=("Arial", 24))
-        self.volume_icon.place(x=10, y=100)  # Sol tarafa yerleştir
+        self.volume_icon.place(x=550, y=10)  # Sol tarafa yerleştir
 
         # Ses seviyesi slider'ı için çerçeve
         self.volume_frame = ctk.CTkFrame(self, width=50, height=200)
@@ -47,12 +51,13 @@ class MeditationScreen(ctk.CTkFrame):
             self.volume_frame,
             from_=0,
             to=1,
-            number_of_steps=20,
+            number_of_steps=30,
             orientation="vertical",
             command=self.change_volume
         )
         self.volume_slider.set(0.5)  # Varsayılan orta seviye
         self.volume_slider.pack(pady=10)
+        self.volume_frame.place(x=555, y=30)  # Ses simgesinin hemen altına yerleştir
 
         # Slider başlangıçta gizli
         self.volume_frame.place_forget()
@@ -74,7 +79,7 @@ class MeditationScreen(ctk.CTkFrame):
         if self.hide_slider_job:
             self.after_cancel(self.hide_slider_job)  # Gizleme işlemini iptal et
             self.hide_slider_job = None
-        self.volume_frame.place(x=10, y=130)  # Ses simgesinin hemen altına yerleştir
+        self.volume_frame.place(x=555, y=30)  # Ses simgesinin hemen altına yerleştir
 
     def hide_volume_slider_delayed(self, event=None):
         """Slider'ı gecikmeli olarak gizle."""

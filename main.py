@@ -9,56 +9,6 @@ from screens.settings_screen import SettingsScreen
 from screens.meditation_screen import MeditationScreen  # Eğer meditasyon ekranı varsa
 from utils.data_manager import load_settings  # Ayarları yüklemek için
 
-
-SETTINGS_PATH = "settings.json"
-MEDITATION_DATA_PATH = "meditation_data.json"
-
-def save_settings(settings):
-    with open(SETTINGS_PATH, "w") as f:
-        json.dump(settings, f, indent=4)
-
-def load_meditation_data():
-    """Meditasyon verilerini yükler."""
-    if not os.path.exists(MEDITATION_DATA_PATH):
-        return {"last_meditation_date": None, "streak": 0}
-    with open(MEDITATION_DATA_PATH, "r") as f:
-        return json.load(f)
-
-def save_meditation_data(data):
-    """Meditasyon verilerini kaydeder."""
-    with open(MEDITATION_DATA_PATH, "w") as f:
-        json.dump(data, f, indent=4)
-
-def update_streak():
-    """Streak'i günceller ve meditasyon verilerini kaydeder."""
-    data = load_meditation_data()
-    today = time.strftime("%Y-%m-%d")
-    last_date = data.get("last_meditation_date")
-
-    if last_date == today:
-        # Bugün zaten meditasyon yapılmış
-        return data["streak"]
-
-        # Son meditasyon tarihi ile bugünü karşılaştır
-        last_date_obj = time.strptime(last_date, "%Y-%m-%d")
-        today_obj = time.strptime(today, "%Y-%m-%d")
-        days_diff = (time.mktime(today_obj) - time.mktime(last_date_obj)) / (24 * 3600)
-
-        if days_diff == 1:
-            # Streak devam ediyor
-            data["streak"] += 1
-        else:
-            # Streak sıfırlanıyor
-            data["streak"] = 1
-    else:
-        # İlk meditasyon
-        data["streak"] = 1
-
-    # Güncel verileri kaydet
-    data["last_meditation_date"] = today
-    save_meditation_data(data)
-    return data["streak"]
-
 class MeditationApp(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -70,8 +20,10 @@ class MeditationApp(ctk.CTk):
 
         # Tema ayarı
         settings = load_settings()
-        ctk.set_appearance_mode(settings.get("theme", "dark"))  # Tema ayarı
-        ctk.set_default_color_theme("blue")  # Mavi tema
+        if settings.get("theme") == "Purple & Gray":
+            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/purple_gray_theme.json")
+        elif settings.get("theme") == "Orange & Gray":
+            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/orange_gray_theme.json")
 
         # Sayfa yerleştirme
         self.current_frame = None

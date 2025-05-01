@@ -35,9 +35,17 @@ class HomeScreen(ctk.CTkFrame):
         start_btn = ctk.CTkButton(self, text="🕒 Meditasyona Başla", command=self.start_meditation)
         start_btn.pack(pady=20)
 
-        # Ayarlar butonu
-        settings_btn = ctk.CTkButton(self, text="⚙️ Ayarlar", command=go_settings)
-        settings_btn.pack(pady=10)
+        # Ayarlar butonu (sağ üst köşeye taşındı)
+        settings_btn = ctk.CTkButton(
+            self,
+            text="⚙️",  # İkon olarak gösterilecek
+            width=40,
+            height=40,
+            command=go_settings,
+            fg_color="#212121",  # Arka planı şeffaf yap
+            hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
+        )
+        settings_btn.place(x=550, y=10)  # Sağ üst köşeye yerleştir
 
     def start_meditation(self):
         selected = self.selected_time.get()
