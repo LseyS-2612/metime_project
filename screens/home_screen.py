@@ -59,7 +59,7 @@ class HomeScreen(ctk.CTkFrame):
         self.quote_label = ctk.CTkLabel(
             self.quote_frame,
             text="",
-            font=("Times New Roman", 18, "bold"),
+            font=("Times New Roman", 14, "bold"),
             wraplength=480,
             justify="center",
             anchor="center"
@@ -76,25 +76,31 @@ class HomeScreen(ctk.CTkFrame):
     def load_quotes(self):
         """JSON dosyasından sözleri yükler."""
         try:
-            with open("C:/Users/klcan/metime_project/quotes.json", "r", encoding="utf-8") as file:
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_dir, "..", "quotes.json"))
+
+            with open(file_path, "r", encoding="utf-8") as file:
                 return json.load(file)
         except FileNotFoundError:
             print("quotes.json dosyası bulunamadı!")
             return []
 
+    import os
+
     def load_background_images(self):
         """Arka plan resimlerini yükler."""
-        backgrounds_path = "c:/Users/klcan/metime_project/assets/backgrounds/"
+        base_dir = os.path.dirname(__file__)
+        backgrounds_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "backgrounds"))
+
         try:
             return [
                 os.path.join(backgrounds_path, file)
                 for file in os.listdir(backgrounds_path)
-                if file.endswith((".png", ".jpg", ".jpeg"))
+                if file.lower().endswith((".png", ".jpg", ".jpeg"))
             ]
         except FileNotFoundError:
             print("Arka plan klasörü bulunamadı!")
             return []
-
     def update_quote(self):
         """Sözleri ve arka planı rastgele seç ve etiketi güncelle."""
         if self.quotes and self.background_images:
@@ -133,7 +139,7 @@ class HomeScreen(ctk.CTkFrame):
             # Alıntıyı metin olarak ekle
             self.quote_label.configure(
                 text=f'"{random_quote["quote"]}"\n\n- {random_quote["author"]}',
-                font=("Times New Roman", 18, "bold"),
+                font=("Times New Roman", 14, "bold"),
                 compound="center"  # Resim ve metni birleştir
             )
         # 10 saniye sonra tekrar güncelle

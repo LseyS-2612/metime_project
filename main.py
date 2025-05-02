@@ -19,9 +19,13 @@ class MeditationApp(ctk.CTk):
         # Tema ayarı
         settings = load_settings()
         if settings.get("theme") == "Purple & Gray":
-            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/purple_gray_theme.json")
+            base_dir = os.path.dirname(__file__)
+            theme_path = os.path.join(base_dir, "themes", "purple_gray_theme.json")
+            ctk.set_default_color_theme(theme_path)
         elif settings.get("theme") == "Orange & Gray":
-            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/orange_gray_theme.json")
+            base_dir = os.path.dirname(__file__)
+            theme_path = os.path.join(base_dir, "themes", "orange_gray_theme.json")
+            ctk.set_default_color_theme(theme_path)
 
         # Sayfa yerleştirme
         self.current_frame = None

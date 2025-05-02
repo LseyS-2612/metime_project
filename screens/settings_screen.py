@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from utils.data_manager import load_settings, save_settings
+import os
 
 class SettingsScreen(ctk.CTkFrame):
     def __init__(self, master, go_home):
@@ -44,8 +45,14 @@ class SettingsScreen(ctk.CTkFrame):
         }
         save_settings(new_settings)
 
+                # __file__ hangi .py dosyasındaysan onun yolunu verir
+        base_dir = os.path.dirname(__file__)
+        theme_dir = os.path.abspath(os.path.join(base_dir, "..", "themes"))
+
         # Tema anlık olarak uygula
         if new_settings["theme"] == "Purple & Gray":
-            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/purple_gray_theme.json")
+            theme_path = os.path.join(theme_dir, "purple_gray_theme.json")
+            ctk.set_default_color_theme(theme_path)
         elif new_settings["theme"] == "Orange & Gray":
-            ctk.set_default_color_theme("C:/Users/klcan/metime_project/themes/orange_gray_theme.json")
+            theme_path = os.path.join(theme_dir, "orange_gray_theme.json")
+            ctk.set_default_color_theme(theme_path)
