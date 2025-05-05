@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import json
 import random
-from utils.data_manager import load_meditation_data, update_streak
+from utils.data_manager import load_meditation_data, update_streak, load_settings
 from PIL import Image, ImageTk, ImageDraw
 import os
 import datetime
@@ -329,14 +329,15 @@ class HomeScreen(ctk.CTkFrame):
         time_entry.place(relx=0.5, rely=0.4, anchor="center")
 
         # Zamanlayıcıyı başlatma butonu
+        button_colors = self.get_timer_button_color()  # Temaya uygun renkler al
         start_btn = ctk.CTkButton(
             self,
             text="Başlat",
             command=lambda: self.start_timer(time_entry.get()),
             width=100,
             height=40,
-            fg_color="#4CAF50",  # Yeşil renk
-            hover_color="#45A049"
+            fg_color=button_colors["fg_color"],  # Temaya uygun renk
+            hover_color=button_colors["hover_color"]  # Temaya uygun hover rengi
         )
         start_btn.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -389,20 +390,35 @@ class HomeScreen(ctk.CTkFrame):
 
         # Duraklat/Devam Et butonu
         self.paused = False  # Duraklatma durumu
+        button_colors = self.get_timer_button_color()  # Temaya uygun renkler al
         self.pause_btn = ctk.CTkButton(
             self,
             text="Duraklat",
             width=100,
             height=40,
             command=self.toggle_pause,
-            fg_color="#FFA500",  # Turuncu renk
-            hover_color="#FF8C00"
+            fg_color=button_colors["fg_color"],  # Temaya uygun renk
+            hover_color=button_colors["hover_color"]  # Temaya uygun hover rengi
         )
         self.pause_btn.place(relx=0.5, rely=0.6, anchor="center")
 
         # Geri sayımı başlat
         self.remaining_seconds = minutes * 60
         self.update_countdown()
+
+    def get_timer_button_color(self):
+        """Temaya uygun başlat/duraklat butonu renklerini döndürür."""
+        theme = self.get_theme()
+        if theme == "Purple & Gray":
+            return {"fg_color": "#6A0DAD", "hover_color": "#7B1FA2"}  # Mor tonları
+        elif theme == "Orange & Gray":
+            return {"fg_color": "#FF5722", "hover_color": "#FF7043"}  # Turuncu tonları
+        return {"fg_color": "#4CAF50", "hover_color": "#45A049"}  # Varsayılan yeşil
+
+    def get_theme(self):
+        """Temayı ayarlardan alır."""
+        settings = load_settings()
+        return settings.get("theme", "Purple & Gray")
 
     def toggle_pause(self):
         """Duraklatma ve devam etme işlemini kontrol eder."""
