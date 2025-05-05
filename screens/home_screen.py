@@ -4,6 +4,7 @@ import random
 from utils.data_manager import load_meditation_data, update_streak
 from PIL import Image, ImageTk, ImageDraw
 import os
+import datetime
 
 class HomeScreen(ctk.CTkFrame):
     def __init__(self, master, go_meditation, go_settings):
@@ -11,32 +12,32 @@ class HomeScreen(ctk.CTkFrame):
 
         self.go_meditation = go_meditation
 
-        # Başlık
-        title = ctk.CTkLabel(self, text="🧘 Meditasyon Uygulaması", font=("Arial", 22, "bold"))
-        title.pack(pady=20)
+        # Menü çerçevesi
+        menu_frame = ctk.CTkFrame(self, height=60, fg_color="#343434")
+        menu_frame.pack(side="top", fill="x")
 
-        # Streak bilgisi
+        # Günün saatine göre selamlama mesajı
+        self.greeting_label = ctk.CTkLabel(
+            menu_frame,
+            text=self.get_greeting_message(),
+            font=("Times New Roman", 24, "bold"),  # Daha büyük ve italik bir yazı tipi
+            text_color="#FFFFFF"  # Beyaz renk
+        )
+        self.greeting_label.place(x=15, y=15)  # Sol üst köşeye yerleştir
+
+        # Streak bilgisi (ikon olarak)
         streak = load_meditation_data().get("streak", 0)
-        streak_label = ctk.CTkLabel(self, text=f"🔥 Streak: {streak} gün", font=("Arial", 16))
-        streak_label.pack(pady=10)
+        streak_icon = ctk.CTkLabel(
+            menu_frame,
+            text=f"🔥 {streak}",
+            font=("Arial", 14, "bold"),  # Daha küçük ve ikon stili
+            text_color="#FFFFFF"
+        )
+        streak_icon.place(x=500, y=15)  # Ayarlar ikonunun soluna yerleştir
 
-        # Süre seçimi
-        self.selected_time = ctk.IntVar(value=5)  # varsayılan 5 dakika
-
-        time_frame = ctk.CTkFrame(self)
-        time_frame.pack(pady=20)
-
-        for minute in [5, 10, 15]:
-            rb = ctk.CTkRadioButton(time_frame, text=f"{minute} dakika", variable=self.selected_time, value=minute)
-            rb.pack(side="left", padx=10)
-
-        # Başlat butonu
-        start_btn = ctk.CTkButton(self, text="🕒 Meditasyona Başla", command=self.start_meditation)
-        start_btn.pack(pady=20)
-
-        # Ayarlar butonu (sağ üst köşeye taşındı)
+        # Ayarlar butonu
         settings_btn = ctk.CTkButton(
-            self,
+            menu_frame,
             text="⚙️",  # İkon olarak gösterilecek
             width=40,
             height=40,
@@ -46,6 +47,35 @@ class HomeScreen(ctk.CTkFrame):
         )
         settings_btn.place(x=550, y=10)  # Sağ üst köşeye yerleştir
 
+        # Butonlar için bir çerçeve
+        button_frame = ctk.CTkFrame(self)
+        button_frame.place(relx=0.5, rely=0.15, anchor="n")  # Menü çerçevesi için daha aşağıya taşındı
+
+        # Buton isimleri ve işlevleri
+        buttons = [
+            ("Günlük Meditasyon", lambda: print("Günlük Meditasyon")),
+            ("İndirilenler", lambda: print("İndirilenler")),
+            ("Zamanlayıcı", lambda: print("Zamanlayıcı")),
+            ("Uyku", lambda: print("Uyku")),
+            ("Meydan Okuma", lambda: print("Meydan Okuma")),
+            ("Acil Durum", lambda: print("Acil Durum")),
+            ("Favoriler", lambda: print("Favoriler")),
+            ("Kurslar", self.show_course_categories)
+        ]
+
+        # 3 satır ve 2 sütun düzeni
+        for i, (text, command) in enumerate(buttons):
+            row = i // 2
+            col = i % 2
+            btn = ctk.CTkButton(
+                button_frame,
+                text=text,
+                command=command,
+                width=200,
+                height=50
+            )
+            btn.grid(row=row, column=col, padx=10, pady=10)
+
         # Tıklanabilir büyük alan (daha yukarıda, köşeleri yuvarlatılmış)
         self.quote_frame = ctk.CTkFrame(
             self,
@@ -54,7 +84,7 @@ class HomeScreen(ctk.CTkFrame):
             fg_color=self.cget("fg_color"),  # Temadaki genel arka plan rengini kullan
             corner_radius=50  # Köşeleri yuvarlat
         )
-        self.quote_frame.place(relx=0.5, rely=0.6, anchor="center")  # Daha yukarı taşımak için rely değerini azalt
+        self.quote_frame.place(relx=0.5, rely=0.75, anchor="center")  # Daha yukarı taşımak için rely değerini azalttık
 
         self.quote_label = ctk.CTkLabel(
             self.quote_frame,
@@ -73,6 +103,18 @@ class HomeScreen(ctk.CTkFrame):
         # Sözleri ve arka planı güncelle
         self.update_quote()
 
+    def get_greeting_message(self):
+        """Günün saatine göre selamlama mesajı döndürür."""
+        current_hour = datetime.datetime.now().hour
+        if 5 <= current_hour < 12:
+            return "Günaydın!"
+        elif 12 <= current_hour < 18:
+            return "İyi Günler!"
+        elif 18 <= current_hour < 22:
+            return "İyi Akşamlar!"
+        else:
+            return "İyi Geceler!"
+
     def load_quotes(self):
         """JSON dosyasından sözleri yükler."""
         try:
@@ -84,8 +126,6 @@ class HomeScreen(ctk.CTkFrame):
         except FileNotFoundError:
             print("quotes.json dosyası bulunamadı!")
             return []
-
-    import os
 
     def load_background_images(self):
         """Arka plan resimlerini yükler."""
@@ -101,6 +141,7 @@ class HomeScreen(ctk.CTkFrame):
         except FileNotFoundError:
             print("Arka plan klasörü bulunamadı!")
             return []
+
     def update_quote(self):
         """Sözleri ve arka planı rastgele seç ve etiketi güncelle."""
         if self.quotes and self.background_images:
@@ -145,11 +186,92 @@ class HomeScreen(ctk.CTkFrame):
         # 10 saniye sonra tekrar güncelle
         self.after(100000, self.update_quote)
 
-    def on_quote_click(self, event=None):
-        """Tıklama olayında yapılacak işlem."""
-        print("Alıntıya tıklandı!")
+    def show_course_categories(self):
+        """'Kurslar' butonuna tıklandığında bölümleri 2x10 düzeninde gösterir."""
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
 
-    def start_meditation(self):
-        selected = self.selected_time.get()
-        update_streak()  # Streak'i güncelle
-        self.go_meditation(selected)
+        # Geri dönüş butonu (sol üst köşede ikon olarak)
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",  # Geri dönüş ikonu
+            width=40,
+            height=40,
+            command=self.load_home_screen,  # Ana ekrana dönmek için
+            fg_color="#212121",  # Arka plan rengi
+            hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
+        )
+        back_btn.place(x=10, y=10)  # Sol üst köşeye yerleştir
+
+        # Kurslar için bir çerçeve
+        courses_frame = ctk.CTkFrame(self)
+        courses_frame.place(relx=0.5, rely=0.2, anchor="n")  # Çerçeveyi ortala
+
+        # Bölümleri yükle
+        try:
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
+
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            # 2x10 düzeni
+            for i, bölüm in enumerate(data["Bölümler"]):
+                row = i // 2
+                col = i % 2
+                category_btn = ctk.CTkButton(
+                    courses_frame,
+                    text=bölüm["isim"],
+                    command=lambda b=bölüm: self.show_sessions(b),
+                    width=200,
+                    height=50
+                )
+                category_btn.grid(row=row, column=col, padx=10, pady=10)
+
+        except FileNotFoundError:
+            print("courses.json dosyası bulunamadı!")
+
+    def show_sessions(self, bölüm):
+        """Seçilen bölümdeki seansları 2x10 düzeninde gösterir."""
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Geri dönüş butonu (sol üst köşede ikon olarak)
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",  # Geri dönüş ikonu
+            width=40,
+            height=40,
+            command=self.show_course_categories,  # Kurs kategorilerine dönmek için
+            fg_color="#212121",  # Arka plan rengi
+            hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
+        )
+        back_btn.place(x=10, y=10)  # Sol üst köşeye yerleştir
+
+        # Seanslar için bir çerçeve
+        sessions_frame = ctk.CTkFrame(self)
+        sessions_frame.place(relx=0.5, rely=0.2, anchor="n")  # Çerçeveyi ortala
+
+        # 2x10 düzeni
+        for i, seans in enumerate(bölüm["seanslar"]):
+            row = i // 2
+            col = i % 2
+            session_btn = ctk.CTkButton(
+                sessions_frame,
+                text=f"{seans['isim']} ({seans['süre']} dk)",
+                command=lambda s=seans: self.start_meditation(s["süre"]),
+                width=200,
+                height=50
+            )
+            session_btn.grid(row=row, column=col, padx=10, pady=10)
+
+    def load_home_screen(self):
+        """Ana ekrana dönmek için."""
+        self.master.show_home()
+
+    def start_meditation(self, süre):
+        """Meditasyonu başlatır."""
+        print(f"{süre} dakikalık meditasyon başlıyor!")
+        self.go_meditation(süre)

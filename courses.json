@@ -1,0 +1,75 @@
+{
+    "Bölümler": [
+        {
+            "isim": "Başlangıç",
+            "seanslar": [
+                {"isim": "5 Dakika Rahatlama", "süre": 5},
+                {"isim": "10 Dakika Odaklanma", "süre": 10},
+                {"isim": "15 Dakika Derin Meditasyon", "süre": 15}
+            ]
+        },
+        {
+            "isim": "Oturmayı Öğren",
+            "seanslar": [
+                {"isim": "10 Dakika Nefes Egzersizi", "süre": 10},
+                {"isim": "20 Dakika Duruş Çalışması", "süre": 20}
+            ]
+        },
+        {
+            "isim": "Dikkatlilik",
+            "seanslar": [
+                {"isim": "5 Dakika Farkındalık", "süre": 5},
+                {"isim": "15 Dakika Düşünce İzleme", "süre": 15}
+            ]
+        },
+        {
+            "isim": "Uygulamanızı Geliştirin",
+            "seanslar": [
+                {"isim": "10 Dakika Gelişmiş Teknikler", "süre": 10},
+                {"isim": "30 Dakika Derinleşme", "süre": 30}
+            ]
+        },
+        {
+            "isim": "Açık Farkındalık",
+            "seanslar": [
+                {"isim": "10 Dakika Açık Farkındalık", "süre": 10},
+                {"isim": "20 Dakika Gözlem", "süre": 20}
+            ]
+        },
+        {
+            "isim": "Minnettarlık",
+            "seanslar": [
+                {"isim": "5 Dakika Minnettarlık", "süre": 5},
+                {"isim": "15 Dakika Şükran Çalışması", "süre": 15}
+            ]
+        },
+        {
+            "isim": "Merhamet",
+            "seanslar": [
+                {"isim": "10 Dakika Merhamet Meditasyonu", "süre": 10},
+                {"isim": "20 Dakika Empati Çalışması", "süre": 20}
+            ]
+        },
+        {
+            "isim": "Büyük Düşünürler",
+            "seanslar": [
+                {"isim": "15 Dakika İlham Verici Düşünceler", "süre": 15},
+                {"isim": "30 Dakika Felsefi Derinlik", "süre": 30}
+            ]
+        },
+        {
+            "isim": "Meditasyon İçgüdüsü",
+            "seanslar": [
+                {"isim": "10 Dakika İçgüdüsel Meditasyon", "süre": 10},
+                {"isim": "25 Dakika Doğal Akış", "süre": 25}
+            ]
+        },
+        {
+            "isim": "Zihin ve Beden",
+            "seanslar": [
+                {"isim": "10 Dakika Zihin-Beden Bağlantısı", "süre": 10},
+                {"isim": "20 Dakika Fiziksel Farkındalık", "süre": 20}
+            ]
+        }
+    ]
+}
