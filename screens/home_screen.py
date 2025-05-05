@@ -5,12 +5,16 @@ from utils.data_manager import load_meditation_data, update_streak
 from PIL import Image, ImageTk, ImageDraw
 import os
 import datetime
+from screens.profile_screen import ProfileScreen
+from screens.settings_screen import SettingsScreen
 
 class HomeScreen(ctk.CTkFrame):
-    def __init__(self, master, go_meditation, go_settings):
+    def __init__(self, master, go_meditation, go_settings, go_profile):
         super().__init__(master)
 
         self.go_meditation = go_meditation
+        self.go_settings = go_settings
+        self.go_profile = go_profile
 
         # Menü çerçevesi
         menu_frame = ctk.CTkFrame(self, height=60, fg_color="#343434")
@@ -33,7 +37,19 @@ class HomeScreen(ctk.CTkFrame):
             font=("Arial", 14, "bold"),  # Daha küçük ve ikon stili
             text_color="#FFFFFF"
         )
-        streak_icon.place(x=500, y=15)  # Ayarlar ikonunun soluna yerleştir
+        streak_icon.place(x=460, y=15)  # Ayarlar ikonunun soluna yerleştir
+
+        # Profil butonu
+        profile_btn = ctk.CTkButton(
+            menu_frame,
+            text="👤",  # Profil ikonu
+            width=40,
+            height=40,
+            command=self.go_profile,  # Profil ekranını çağır
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        profile_btn.place(x=500, y=10)  # Streak ile ayarlar arasında yerleştirildi
 
         # Ayarlar butonu
         settings_btn = ctk.CTkButton(
@@ -41,7 +57,7 @@ class HomeScreen(ctk.CTkFrame):
             text="⚙️",  # İkon olarak gösterilecek
             width=40,
             height=40,
-            command=go_settings,
+            command=lambda: self.master.show_settings(),  # Ayarlar ekranını çağır
             fg_color="#212121",  # Arka planı şeffaf yap
             hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
         )
@@ -60,7 +76,7 @@ class HomeScreen(ctk.CTkFrame):
             ("Meydan Okuma", lambda: print("Meydan Okuma")),
             ("Acil Durum", lambda: print("Acil Durum")),
             ("Favoriler", lambda: print("Favoriler")),
-            ("Kurslar", self.show_course_categories)
+            ("Kurslar", self.show_course_categories),
         ]
 
         # 3 satır ve 2 sütun düzeni
@@ -410,3 +426,9 @@ class HomeScreen(ctk.CTkFrame):
             self.after(1000, self.update_countdown)
         else:
             self.countdown_label.configure(text="Süre Doldu!")
+
+    def show_profile_screen(self):
+        """Profil ekranını gösterir."""
+        self.master.clear_frame()
+        self.master.current_frame = ProfileScreen(self.master, self.master.show_home)
+        self.master.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)

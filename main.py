@@ -5,6 +5,7 @@ import pygame
 from screens.home_screen import HomeScreen
 from screens.settings_screen import SettingsScreen
 from screens.meditation_screen import MeditationScreen
+from screens.profile_screen import ProfileScreen
 from utils.data_manager import load_settings
 
 class MeditationApp(ctk.CTk):
@@ -37,7 +38,7 @@ class MeditationApp(ctk.CTk):
 
     def show_home(self):
         self.clear_frame()
-        self.current_frame = HomeScreen(self, self.show_meditation, self.show_settings)
+        self.current_frame = HomeScreen(self, self.show_meditation, self.show_settings, self.show_profile)
         self.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def show_meditation(self, selected_minutes=5):
@@ -45,7 +46,14 @@ class MeditationApp(ctk.CTk):
         self.current_frame = MeditationScreen(self, self.show_home, selected_minutes)
         self.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
+    def show_profile(self):
+        """Profil ekranını gösterir."""
+        self.clear_frame()
+        self.current_frame = ProfileScreen(self, self.show_home)
+        self.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+
     def show_settings(self):
+        """Ayarlar ekranını gösterir."""
         self.clear_frame()
         self.current_frame = SettingsScreen(self, self.show_home)
         self.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)

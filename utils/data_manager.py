@@ -6,14 +6,21 @@ SETTINGS_PATH = "settings.json"
 MEDITATION_DATA_PATH = "meditation_data.json"
 
 def load_settings():
-    if not os.path.exists(SETTINGS_PATH):
-        return {"theme": "Purple & Gray", "username": "Kullanıcı"}
-    with open(SETTINGS_PATH, "r") as f:
-        return json.load(f)
+    """Ayarları settings.json dosyasından yükler."""
+    base_dir = os.path.dirname(__file__)
+    settings_path = os.path.join(base_dir, "..", "settings.json")
+    try:
+        with open(settings_path, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
 
 def save_settings(settings):
-    with open(SETTINGS_PATH, "w") as f:
-        json.dump(settings, f, indent=4)
+    """Ayarları settings.json dosyasına kaydeder."""
+    base_dir = os.path.dirname(__file__)
+    settings_path = os.path.join(base_dir, "..", "settings.json")
+    with open(settings_path, "w", encoding="utf-8") as file:
+        json.dump(settings, file, ensure_ascii=False, indent=4)
 
 def load_meditation_data():
     if not os.path.exists(MEDITATION_DATA_PATH):
