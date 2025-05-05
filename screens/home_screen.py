@@ -55,7 +55,7 @@ class HomeScreen(ctk.CTkFrame):
         buttons = [
             ("Günlük Meditasyon", lambda: print("Günlük Meditasyon")),
             ("İndirilenler", lambda: print("İndirilenler")),
-            ("Zamanlayıcı", lambda: print("Zamanlayıcı")),
+            ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: print("Uyku")),
             ("Meydan Okuma", lambda: print("Meydan Okuma")),
             ("Acil Durum", lambda: print("Acil Durum")),
@@ -89,7 +89,7 @@ class HomeScreen(ctk.CTkFrame):
         self.quote_label = ctk.CTkLabel(
             self.quote_frame,
             text="",
-            font=("Times New Roman", 14, "bold"),
+            font=("Times New Roman", 20, "bold"),
             wraplength=480,
             justify="center",
             anchor="center"
@@ -180,7 +180,7 @@ class HomeScreen(ctk.CTkFrame):
             # Alıntıyı metin olarak ekle
             self.quote_label.configure(
                 text=f'"{random_quote["quote"]}"\n\n- {random_quote["author"]}',
-                font=("Times New Roman", 14, "bold"),
+                font=("Times New Roman", 20, "bold"),
                 compound="center"  # Resim ve metni birleştir
             )
         # 10 saniye sonra tekrar güncelle
@@ -275,3 +275,138 @@ class HomeScreen(ctk.CTkFrame):
         """Meditasyonu başlatır."""
         print(f"{süre} dakikalık meditasyon başlıyor!")
         self.go_meditation(süre)
+
+    def show_timer_screen(self):
+        """Zamanlayıcı ekranını gösterir."""
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Geri dönüş butonu (sol üst köşede ikon olarak)
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",  # Geri dönüş ikonu
+            width=40,
+            height=40,
+            command=self.load_home_screen,  # Ana ekrana dönmek için
+            fg_color="#212121",  # Arka plan rengi
+            hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
+        )
+        back_btn.place(x=10, y=10)  # Sol üst köşeye yerleştir
+
+        # Zamanlayıcı başlığı
+        timer_label = ctk.CTkLabel(
+            self,
+            text="Zamanlayıcı Kur",
+            font=("Helvetica", 20, "bold"),
+            text_color="#FFFFFF"
+        )
+        timer_label.place(relx=0.5, rely=0.2, anchor="center")
+
+        # Süre seçimi için giriş alanı
+        time_entry = ctk.CTkEntry(
+            self,
+            placeholder_text="Süreyi dakika olarak girin",
+            width=200,
+            height=40
+        )
+        time_entry.place(relx=0.5, rely=0.4, anchor="center")
+
+        # Zamanlayıcıyı başlatma butonu
+        start_btn = ctk.CTkButton(
+            self,
+            text="Başlat",
+            command=lambda: self.start_timer(time_entry.get()),
+            width=100,
+            height=40,
+            fg_color="#4CAF50",  # Yeşil renk
+            hover_color="#45A049"
+        )
+        start_btn.place(relx=0.5, rely=0.5, anchor="center")
+
+    def start_timer(self, minutes):
+        """Zamanlayıcıyı başlatır."""
+        try:
+            minutes = int(minutes)
+            if minutes <= 0:
+                raise ValueError("Süre pozitif bir sayı olmalıdır.")
+        except ValueError:
+            error_label = ctk.CTkLabel(
+                self,
+                text="Lütfen geçerli bir süre girin!",
+                font=("Helvetica", 14, "bold"),
+                text_color="#FF0000"  # Kırmızı renk
+            )
+            error_label.place(relx=0.5, rely=0.6, anchor="center")
+            self.after(3000, error_label.destroy)  # 3 saniye sonra hata mesajını kaldır
+            return
+
+        # Geri sayım ekranını göster
+        self.show_countdown(minutes)
+
+    def show_countdown(self, minutes):
+        """Geri sayım ekranını gösterir."""
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Geri dönüş butonu
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",
+            width=40,
+            height=40,
+            command=self.load_home_screen,
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        back_btn.place(x=10, y=10)
+
+        # Geri sayım etiketi
+        self.countdown_label = ctk.CTkLabel(
+            self,
+            text="",
+            font=("Helvetica", 48, "bold"),
+            text_color="#FFFFFF"
+        )
+        self.countdown_label.place(relx=0.5, rely=0.4, anchor="center")
+
+        # Duraklat/Devam Et butonu
+        self.paused = False  # Duraklatma durumu
+        self.pause_btn = ctk.CTkButton(
+            self,
+            text="Duraklat",
+            width=100,
+            height=40,
+            command=self.toggle_pause,
+            fg_color="#FFA500",  # Turuncu renk
+            hover_color="#FF8C00"
+        )
+        self.pause_btn.place(relx=0.5, rely=0.6, anchor="center")
+
+        # Geri sayımı başlat
+        self.remaining_seconds = minutes * 60
+        self.update_countdown()
+
+    def toggle_pause(self):
+        """Duraklatma ve devam etme işlemini kontrol eder."""
+        self.paused = not self.paused
+        if self.paused:
+            self.pause_btn.configure(text="Başlat")  # Buton metnini "Başlat" olarak değiştir
+        else:
+            self.pause_btn.configure(text="Duraklat")  # Buton metnini "Duraklat" olarak değiştir
+            self.update_countdown()  # Geri sayımı devam ettir
+
+    def update_countdown(self):
+        """Geri sayımı günceller."""
+        if self.paused:
+            return  # Duraklatılmışsa hiçbir şey yapma
+
+        if self.remaining_seconds > 0:
+            minutes = self.remaining_seconds // 60
+            seconds = self.remaining_seconds % 60
+            self.countdown_label.configure(text=f"{minutes:02}:{seconds:02}")
+            self.remaining_seconds -= 1
+            self.after(1000, self.update_countdown)
+        else:
+            self.countdown_label.configure(text="Süre Doldu!")
