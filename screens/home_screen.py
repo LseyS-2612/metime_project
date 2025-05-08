@@ -84,7 +84,7 @@ class HomeScreen(ctk.CTkFrame):
             ("İndirilenler", lambda: print("İndirilenler")),
             ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: self.show_sleep_sessions()),
-            ("Meydan Okuma", lambda: print("Meydan Okuma")),
+            ("Meydan Okuma", self.show_challenge_courses),
             ("Acil Durum", lambda: self.show_emergency_meditations()),
             ("Favoriler", lambda: print("Favoriler")),
             ("Kurslar", self.show_course_categories),
@@ -607,3 +607,66 @@ class HomeScreen(ctk.CTkFrame):
         self.master.clear_frame()
         self.master.current_frame = QuotesScreen(self.master, self.master.show_home)
         self.master.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    
+    def show_challenge_courses(self):
+        """Meydan Okuma ekranını gösterir."""
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Geri dönüş butonu
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",
+            width=40,
+            height=40,
+            command=self.load_home_screen,  # Ana ekrana dönmek için
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        back_btn.place(x=10, y=10)
+
+        # Başlık
+        title_label = ctk.CTkLabel(
+            self,
+            text="Meydan Okuma Kursları",
+            font=("Helvetica", 20, "bold"),
+            text_color="#FFFFFF"
+        )
+        title_label.place(relx=0.5, rely=0.2, anchor="center")
+
+        # Kurslar için bir çerçeve
+        courses_frame = ctk.CTkFrame(self)
+        courses_frame.place(relx=0.5, rely=0.3, anchor="n")
+
+        # JSON dosyasını yükle
+        try:
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
+
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            # "Meydan Okumalar" bölümünü bul
+            challenge_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Meydan Okumalar"), None)
+
+            if challenge_section:
+                # 2x2 düzeni
+                for i, seans in enumerate(challenge_section["seanslar"]):
+                    row = i // 2
+                    col = i % 2
+                    session_btn = ctk.CTkButton(
+                        courses_frame,
+                        text=seans["isim"],
+                        command=lambda s=seans: self.start_meditation(s),
+                        width=200,
+                        height=50,
+                        font=("Times New Roman", 12, "bold"),
+                    )
+                    session_btn.grid(row=row, column=col, padx=10, pady=10)
+            else:
+                print("'Meydan Okumalar' bölümü bulunamadı!")
+
+        except FileNotFoundError:
+            print("courses.json dosyası bulunamadı!")

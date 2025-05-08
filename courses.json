@@ -117,6 +117,15 @@
                 {"isim": "Basit mantra-1", "ses_dosyasi": "Mantra Meditasyonu/mantra_meditasyonu-3.mp3"},
                 {"isim": "Basit mantra-2", "ses_dosyasi": "Mantra Meditasyonu/mantra_meditasyonu-4.mp3"}
             ]
+        },
+        {
+            "isim": "Meydan Okumalar",
+            "seanslar": [
+            {"isim": "15 Dakika Meditasyon", "ses_dosyasi": "Meydan Okumalar/15min_meditation.mp3"},
+            {"isim": "20 Dakika Meditasyon", "ses_dosyasi": "Meydan Okumalar/20min_meditation.mp3"},
+            {"isim": "25 Dakika Meditasyon", "ses_dosyasi": "Meydan Okumalar/25min_meditation.mp3"},
+            {"isim": "30 Dakika Meditasyon", "ses_dosyasi": "Meydan Okumalar/30min_meditation.mp3"}
+            ]
         }
     ]
 }
