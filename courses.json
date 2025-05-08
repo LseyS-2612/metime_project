@@ -28,94 +28,94 @@
         {
             "isim": "Orta Seviye Meditasyon Kursu",
             "seanslar": [
-                {"isim": "1. Giriş", "ses_dosyasi": "orta_seviye_meditasyon_kursu-1.mp3"},
-                {"isim": "2. Kendiliğinden Gelen Düşünceler", "ses_dosyasi": "orta_seviye_meditasyon_kursu-2.mp3"},
-                {"isim": "3. Benlik", "ses_dosyasi": "orta_seviye_meditasyon_kursu-3.mp3"},
-                {"isim": "4. Bilinç", "ses_dosyasi": "orta_seviye_meditasyon_kursu-4.mp3"},
-                {"isim": "5. Kaygı", "ses_dosyasi": "orta_seviye_meditasyon_kursu-5.mp3"},
-                {"isim": "6. Minimal yaşam", "ses_dosyasi": "orta_seviye_meditasyon_kursu-6.mp3"},
-                {"isim": "7. Ego Çözülmesi", "ses_dosyasi": "orta_seviye_meditasyon_kursu-7.mp3"},
-                {"isim": "8. Stres", "ses_dosyasi": "orta_seviye_meditasyon_kursu-8.mp3"},
-                {"isim": "9. Açık Farkındalık", "ses_dosyasi": "orta_seviye_meditasyon_kursu-9.mp3"},
-                {"isim": "10. Özgür irade", "ses_dosyasi": "orta_seviye_meditasyon_kursu-10.mp3"}
+                {"isim": "1. Giriş", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-1.mp3"},
+                {"isim": "2. Kendiliğinden Gelen Düşünceler", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-2.mp3"},
+                {"isim": "3. Benlik", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-3.mp3"},
+                {"isim": "4. Bilinç", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-4.mp3"},
+                {"isim": "5. Kaygı", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-5.mp3"},
+                {"isim": "6. Minimal yaşam", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-6.mp3"},
+                {"isim": "7. Ego Çözülmesi", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-7.mp3"},
+                {"isim": "8. Stres", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-8.mp3"},
+                {"isim": "9. Açık Farkındalık", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-9.mp3"},
+                {"isim": "10. Özgür irade", "ses_dosyasi": "Orta Seviye Meditasyon Kursu/orta_seviye_meditasyon_kursu-10.mp3"}
             ]
         },
         {
             "isim": "Stres ve Kaygı İçin Meditasyon",
             "seanslar": [
-                {"isim": "Stres ve Kaygı İçin Meditasyon", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-1.mp3"},
-                {"isim": "Kaygıyı Yönetmek", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-2.mp3"},
-                {"isim": "Stresi Yönetmek", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-3.mp3"},
-                {"isim": "Düşünceleri ve Duyguları Etiketleme", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-4.mp3"},
-                {"isim": "Şu Anda Huzuru Bulmak", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-5.mp3"},
-                {"isim": "Yararsız Düşünceleri Tanıma", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-6.mp3"},
-                {"isim": "Stresli Durumlarla Başa Çıkma", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-7.mp3"},
-                {"isim": "Fiziksel Duyumları Etiketlemek", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-8.mp3"},
-                {"isim": "Kaygıyı Anlamak", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-9.mp3"},
-                {"isim": "Olumsuz Duygular", "ses_dosyasi": "stress_ve_kaygı_için_meditasyon-10.mp3"}
+                {"isim": "Stres ve Kaygı İçin Meditasyon", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-1.mp3"},
+                {"isim": "Kaygıyı Yönetmek", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-2.mp3"},
+                {"isim": "Stresi Yönetmek", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-3.mp3"},
+                {"isim": "Düşünceleri ve Duyguları Etiketleme", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-4.mp3"},
+                {"isim": "Şu Anda Huzuru Bulmak", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-5.mp3"},
+                {"isim": "Yararsız Düşünceleri Tanıma", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-6.mp3"},
+                {"isim": "Stresli Durumlarla Başa Çıkma", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-7.mp3"},
+                {"isim": "Fiziksel Duyumları Etiketlemek", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-8.mp3"},
+                {"isim": "Kaygıyı Anlamak", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-9.mp3"},
+                {"isim": "Olumsuz Duygular", "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-10.mp3"}
             ]
         },
         {
             "isim": "Uyku İçin Meditasyon",
             "seanslar": [
-                {"isim": "Kademeli Kas Gevşemesi", "ses_dosyasi": "uyku_icin_meditasyon-1.mp3"},
-                {"isim": "Dikkatli Nefes Alma", "ses_dosyasi": "uyku_icin_meditasyon-2.mp3"},
-                {"isim": "Görselleştirme", "ses_dosyasi": "uyku_icin_meditasyon-3.mp3"},
-                {"isim": "Vücut Taraması", "ses_dosyasi": "uyku_icin_meditasyon-4.mp3"}
+                {"isim": "Kademeli Kas Gevşemesi", "ses_dosyasi": "Uyku İçin Meditasyon/uyku_icin_meditasyon-1.mp3"},
+                {"isim": "Dikkatli Nefes Alma", "ses_dosyasi": "Uyku İçin Meditasyon/uyku_icin_meditasyon-2.mp3"},
+                {"isim": "Görselleştirme", "ses_dosyasi": "Uyku İçin Meditasyon/uyku_icin_meditasyon-3.mp3"},
+                {"isim": "Vücut Taraması", "ses_dosyasi": "Uyku İçin Meditasyon/uyku_icin_meditasyon-4.mp3"}
             ]
         },
         {
             "isim": "İş Hayatı Meditasyon Paketi",
             "seanslar": [
-                {"isim": "Çatışmayı Yönetmek", "ses_dosyasi": "is_hayati_meditasyon_paketi-1.mp3"},
-                {"isim": "Stres Yönetimi", "ses_dosyasi": "is_hayati_meditasyon_paketi-2.mp3"},
-                {"isim": "Üretkenlik", "ses_dosyasi": "is_hayati_meditasyon_paketi-3.mp3"},
-                {"isim": "Kendinden Emin Olmak", "ses_dosyasi": "is_hayati_meditasyon_paketi-4.mp3"},
-                {"isim": "Yaratıcılık", "ses_dosyasi": "is_hayati_meditasyon_paketi-5.mp3"},
-                {"isim": "Odak", "ses_dosyasi": "is_hayati_meditasyon_paketi-6.mp3"},
-                {"isim": "İş-yaşam Dengesi", "ses_dosyasi": "is_hayati_meditasyon_paketi-7.mp3"},
-                {"isim": "Motivasyon", "ses_dosyasi": "is_hayati_meditasyon_paketi-8.mp3"},
-                {"isim": "Değişimle Başa Çıkmak", "ses_dosyasi": "is_hayati_meditasyon_paketi-9.mp3"},
-                {"isim": "Önceliklendirme", "ses_dosyasi": "is_hayati_meditasyon_paketi-10.mp3"}
+                {"isim": "Çatışmayı Yönetmek", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-1.mp3"},
+                {"isim": "Stres Yönetimi", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-2.mp3"},
+                {"isim": "Üretkenlik", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-3.mp3"},
+                {"isim": "Kendinden Emin Olmak", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-4.mp3"},
+                {"isim": "Yaratıcılık", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-5.mp3"},
+                {"isim": "Odak", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-6.mp3"},
+                {"isim": "İş-yaşam Dengesi", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-7.mp3"},
+                {"isim": "Motivasyon", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-8.mp3"},
+                {"isim": "Değişimle Başa Çıkmak", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-9.mp3"},
+                {"isim": "Önceliklendirme", "ses_dosyasi": "İş Hayatı Meditasyon Paketi/is_hayati_meditasyon_paketi-10.mp3"}
             ]
         },
         {
             "isim": "Yürüyüş Meditasyonu",
             "seanslar": [
-                {"isim": "İçeride Yürüyüş", "ses_dosyasi": "yuruyus_meditasyonu_disari.mp3"},
-                {"isim": "Dışarıda Yürüyüş", "ses_dosyasi": "yuruyus_meditasyonu_iceri.mp3"}
+                {"isim": "İçeride Yürüyüş", "ses_dosyasi": "Yürüyüş Meditasyonu/yuruyus_meditasyonu_disari.mp3"},
+                {"isim": "Dışarıda Yürüyüş", "ses_dosyasi": "Yürüyüş Meditasyonu/yuruyus_meditasyonu_iceri.mp3"}
             ]
         },
         {
             "isim": "Büyük Düşünürlerle Meditasyon",
             "seanslar": [
-                {"isim": "William James", "ses_dosyasi": "büyük_düsünürlerle_meditasyon-1.mp3"},
-                {"isim": "Rene Descartes", "ses_dosyasi": "büyük_düsünürlerle_meditasyon-2.mp3"},
-                {"isim": "William Shakespeare", "ses_dosyasi": "büyük_düsünürlerle_meditasyon-3.mp3"},
-                {"isim": "Alan Watts", "ses_dosyasi": "büyük_düsünürlerle_meditasyon-4.mp3"},
-                {"isim": "William Blake", "ses_dosyasi": "büyük_düsünürlerle_meditasyon-5.mp3"}
+                {"isim": "William James", "ses_dosyasi": "Büyük Düşünürlerle Meditasyon/büyük_düsünürlerle_meditasyon-1.mp3"},
+                {"isim": "Rene Descartes", "ses_dosyasi": "Büyük Düşünürlerle Meditasyon/büyük_düsünürlerle_meditasyon-2.mp3"},
+                {"isim": "William Shakespeare", "ses_dosyasi": "Büyük Düşünürlerle Meditasyon/büyük_düsünürlerle_meditasyon-3.mp3"},
+                {"isim": "Alan Watts", "ses_dosyasi": "Büyük Düşünürlerle Meditasyon/büyük_düsünürlerle_meditasyon-4.mp3"},
+                {"isim": "William Blake", "ses_dosyasi": "Büyük Düşünürlerle Meditasyon/büyük_düsünürlerle_meditasyon-5.mp3"}
             ]
         },
         {
             "isim": "Vücut Tarama Meditasyonu",
             "seanslar": [
-                {"isim": "İlk Vücut Taramanız", "ses_dosyasi": "vucut_tarama_meditasyonu-1.mp3"},
-                {"isim": "Pozisyonlar", "ses_dosyasi": "vucut_tarama_meditasyonu-2.mp3"},
-                {"isim": "Duygular", "ses_dosyasi": "vucut_tarama_meditasyonu-3.mp3"},
-                {"isim": "UCLA'dan Vücut Tarama Meditasyonu", "ses_dosyasi": "vucut_tarama_meditasyonu-4.mp3"},
-                {"isim": "Basit Vücut Taraması-1", "ses_dosyasi": "vucut_tarama_meditasyonu-5.mp3"},
-                {"isim": "Basit Vücut Taraması-2", "ses_dosyasi": "vucut_tarama_meditasyonu-6.mp3"},
-                {"isim": "Basit Vücut Taraması-3", "ses_dosyasi": "vucut_tarama_meditasyonu-7.mp3"},
-                {"isim": "Uyku İçin Vücut Taraması", "ses_dosyasi": "vucut_tarama_meditasyonu-8.mp3"}
+                {"isim": "İlk Vücut Taramanız", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-1.mp3"},
+                {"isim": "Pozisyonlar", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-2.mp3"},
+                {"isim": "Duygular", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-3.mp3"},
+                {"isim": "UCLA'dan Vücut Tarama Meditasyonu", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-4.mp3"},
+                {"isim": "Basit Vücut Taraması-1", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-5.mp3"},
+                {"isim": "Basit Vücut Taraması-2", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-6.mp3"},
+                {"isim": "Basit Vücut Taraması-3", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-7.mp3"},
+                {"isim": "Uyku İçin Vücut Taraması", "ses_dosyasi": "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-8.mp3"}
             ]
         },
         {
             "isim": "Mantra Meditasyonu",
             "seanslar": [
-                {"isim": "İlk mantranız", "ses_dosyasi": "mantra_meditasyonu-1.mp3"},
-                {"isim": "Kendi mantranızı seçin", "ses_dosyasi": "mantra_meditasyonu-2.mp3"},
-                {"isim": "Basit mantra-1", "ses_dosyasi": "mantra_meditasyonu-3.mp3"},
-                {"isim": "Basit mantra-2", "ses_dosyasi": "mantra_meditasyonu-4.mp3"}
+                {"isim": "İlk mantranız", "ses_dosyasi": "Mantra Meditasyonu/mantra_meditasyonu-1.mp3"},
+                {"isim": "Kendi mantranızı seçin", "ses_dosyasi": "Mantra Meditasyonu/mantra_meditasyonu-2.mp3"},
+                {"isim": "Basit mantra-1", "ses_dosyasi": "Mantra Meditasyonu/mantra_meditasyonu-3.mp3"},
+                {"isim": "Basit mantra-2", "ses_dosyasi": "Mantra Meditasyonu/mantra_meditasyonu-4.mp3"}
             ]
         }
     ]
