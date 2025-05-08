@@ -576,30 +576,40 @@ class HomeScreen(ctk.CTkFrame):
         )
         title_label.place(relx=0.5, rely=0.2, anchor="center")
 
-        # Meditasyon seçenekleri
-        emergency_options = [
-            {"isim": "Deprem Sonrası Rahatlama", "ses_dosyasi": "earthquake_relief.mp3"},
-            {"isim": "Panik Atak Kontrolü", "ses_dosyasi": "panic_attack_control.mp3"},
-            {"isim": "Stres Azaltma", "ses_dosyasi": "stress_relief.mp3"},
-        ]
-
         # Seçenekler için bir çerçeve
         options_frame = ctk.CTkFrame(self)
         options_frame.place(relx=0.5, rely=0.4, anchor="n")
 
-        # 2x2 düzeni
-        for i, option in enumerate(emergency_options):
-            row = i // 2
-            col = i % 2
-            option_btn = ctk.CTkButton(
-                options_frame,
-                text=option["isim"],
-                command=lambda o=option: self.play_audio(o),  # Seçilen meditasyonu çal
-                width=200,
-                height=50,
-                font=("Times New Roman", 12, "bold"),
-            )
-            option_btn.grid(row=row, column=col, padx=10, pady=10)
+        # JSON dosyasını yükle
+        try:
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
+
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            # "Acil Durum Meditasyonları" bölümünü bul
+            emergency_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Acil Durum Meditasyonları"), None)
+
+            if emergency_section:
+                # 2x2 düzeni
+                for i, seans in enumerate(emergency_section["seanslar"]):
+                    row = i // 2
+                    col = i % 2
+                    option_btn = ctk.CTkButton(
+                        options_frame,
+                        text=seans["isim"],
+                        command=lambda s=seans: self.start_meditation(s),  # Seçilen meditasyonu başlat
+                        width=200,
+                        height=50,
+                        font=("Times New Roman", 12, "bold"),
+                    )
+                    option_btn.grid(row=row, column=col, padx=10, pady=10)
+            else:
+                print("'Acil Durum Meditasyonları' bölümü bulunamadı!")
+
+        except FileNotFoundError:
+            print("courses.json dosyası bulunamadı!")
 
     def show_quotes_screen(self):
         """Quotes ekranını gösterir."""

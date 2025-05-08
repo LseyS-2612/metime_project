@@ -126,6 +126,13 @@
             {"isim": "25 Dakika Meditasyon", "ses_dosyasi": "Meydan Okumalar/25min_meditation.mp3"},
             {"isim": "30 Dakika Meditasyon", "ses_dosyasi": "Meydan Okumalar/30min_meditation.mp3"}
             ]
+        },
+        {
+            "isim": "Acil Durum Meditasyonları",
+            "seanslar": [
+                {"isim": "Deprem Sonrası Rahatlama", "ses_dosyasi": "Acil Durum Meditasyonları/deprem_sonrasi_rahatlama.mp3"},
+                {"isim": "Panik Atak Kontrolü", "ses_dosyasi": "Acil Durum Meditasyonları/panik_atak_kontrolu.mp3"},
+                {"isim": "Stres Azaltma", "ses_dosyasi": "Acil Durum Meditasyonları/stres_azaltma.mp3"}            ]
         }
     ]
 }
