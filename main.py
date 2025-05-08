@@ -34,6 +34,8 @@ class MeditationApp(ctk.CTk):
 
     def clear_frame(self):
         if self.current_frame:
+            if isinstance(self.current_frame, MeditationScreen):
+                self.current_frame.running = False  # Timer'ı durdur
             self.current_frame.destroy()
 
     def show_home(self):
@@ -41,9 +43,9 @@ class MeditationApp(ctk.CTk):
         self.current_frame = HomeScreen(self, self.show_meditation, self.show_settings, self.show_profile)
         self.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-    def show_meditation(self, selected_minutes=5):
+    def show_meditation(self, seans):
         self.clear_frame()
-        self.current_frame = MeditationScreen(self, self.show_home, selected_minutes)
+        self.current_frame = MeditationScreen(self, self.show_home, seans)
         self.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def show_profile(self):

@@ -7,6 +7,7 @@ import os
 import datetime
 from screens.profile_screen import ProfileScreen
 from screens.settings_screen import SettingsScreen
+import pygame
 
 class HomeScreen(ctk.CTkFrame):
     def __init__(self, master, go_meditation, go_settings, go_profile):
@@ -254,21 +255,21 @@ class HomeScreen(ctk.CTkFrame):
         for widget in self.winfo_children():
             widget.destroy()
 
-        # Geri dönüş butonu (sol üst köşede ikon olarak)
+        # Geri dönüş butonu
         back_btn = ctk.CTkButton(
             self,
-            text="⬅️",  # Geri dönüş ikonu
+            text="⬅️",
             width=40,
             height=40,
-            command=self.show_course_categories,  # Kurs kategorilerine dönmek için
-            fg_color="#212121",  # Arka plan rengi
-            hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
+            command=self.show_course_categories,
+            fg_color="#212121",
+            hover_color="#312e33"
         )
-        back_btn.place(x=10, y=10)  # Sol üst köşeye yerleştir
+        back_btn.place(x=10, y=10)
 
         # Seanslar için bir çerçeve
         sessions_frame = ctk.CTkFrame(self)
-        sessions_frame.place(relx=0.5, rely=0.2, anchor="n")  # Çerçeveyi ortala
+        sessions_frame.place(relx=0.5, rely=0.2, anchor="n")
 
         # 2x10 düzeni
         for i, seans in enumerate(bölüm["seanslar"]):
@@ -276,21 +277,40 @@ class HomeScreen(ctk.CTkFrame):
             col = i % 2
             session_btn = ctk.CTkButton(
                 sessions_frame,
-                text=f"{seans['isim']} ({seans['süre']} dk)",
-                command=lambda s=seans: self.start_meditation(s["süre"]),
+                text=f"{seans['isim']}",
+                command=lambda s=seans: self.start_meditation(s),
                 width=200,
                 height=50
             )
             session_btn.grid(row=row, column=col, padx=10, pady=10)
 
+    def play_audio(self, seans):
+        audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
+        audio_path = os.path.join(audio_dir, seans["ses_dosyasi"])
+
+        if os.path.exists(audio_path):
+            duration = self.get_audio_duration(audio_path)
+            print(f"Ses dosyasının süresi: {duration} saniye")
+            pygame.mixer.init()
+            pygame.mixer.music.load(audio_path)
+            pygame.mixer.music.play()
+        else:
+            print(f"Ses dosyası bulunamadı: {audio_path}")
+
+    def get_audio_duration(self,audio_path):
+        pygame.mixer.init()
+        sound = pygame.mixer.Sound(audio_path)
+        duration = sound.get_length()  # Süreyi saniye cinsinden alır
+        return duration
+
     def load_home_screen(self):
         """Ana ekrana dönmek için."""
         self.master.show_home()
 
-    def start_meditation(self, süre):
+    def start_meditation(self, seans):
         """Meditasyonu başlatır."""
-        print(f"{süre} dakikalık meditasyon başlıyor!")
-        self.go_meditation(süre)
+        print(f"{seans['isim']} meditasyonu başlıyor!")
+        self.go_meditation(seans)
 
     def show_timer_screen(self):
         """Zamanlayıcı ekranını gösterir."""
