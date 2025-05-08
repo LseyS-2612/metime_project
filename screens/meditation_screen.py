@@ -19,12 +19,17 @@ class MeditationScreen(ctk.CTkFrame):
         self.audio_path = None
         self.hide_slider_job = None
 
+        # Varsayılan süreyi başlat
+        self.duration = 0  # Varsayılan olarak 0 saniye
+        self.remaining = 0  # Geri sayım için süre
+
         # Ses motorunu başlat
         pygame.mixer.init()
 
         # Ses dosyasını al ve süresini belirle
         self.audio_path = self.get_audio_path(seans)
-        self.remaining = self.duration if self.audio_path else 0  # Süreyi saniye cinsinden ayarla
+        if self.audio_path:
+            self.remaining = self.duration  # Süreyi geri sayım için ayarla
 
         # Başlık
         ctk.CTkLabel(self, text=f"{self.duration // 60} Dakikalık Meditasyon", font=("Arial", 22, "bold")).pack(pady=20)
@@ -108,28 +113,36 @@ class MeditationScreen(ctk.CTkFrame):
             self.running = True
             self.paused = False
             self.start_pause_btn.configure(text="⏸️ Duraklat")
+
+            # Eğer müzik çalmıyorsa başlat
             if not pygame.mixer.music.get_busy():
                 if self.audio_path:
                     pygame.mixer.music.load(self.audio_path)
-                    pygame.mixer.music.play()
+                    pygame.mixer.music.play(start=self.duration - self.remaining)  # Kaldığı yerden başlat
                 else:
                     ctk.CTkLabel(self, text="⚠️ Ses dosyası bulunamadı!", font=("Arial", 14, "bold"), fg_color="red").pack(pady=10)
                     return
             else:
-                pygame.mixer.music.unpause()
+                pygame.mixer.music.unpause()  # Eğer duraklatılmışsa devam ettir
 
             # Timer thread'i başlat
             threading.Thread(target=self.run_timer, daemon=True).start()
         elif self.paused:
             # Duraklatıldıysa devam et
             self.paused = False
+            self.running = True
             self.start_pause_btn.configure(text="⏸️ Duraklat")
-            pygame.mixer.music.unpause()
+            pygame.mixer.music.unpause()  # Müziği devam ettir
         else:
             # Devam ediyorsa duraklat
             self.paused = True
+            self.running = False
             self.start_pause_btn.configure(text="▶️ Devam Et")
-            pygame.mixer.music.pause()
+            pygame.mixer.music.pause()  # Müziği duraklat
+
+    def cleanup(self):
+        self.running = False  # Timer'ı durdur
+        pygame.mixer.music.stop()  # Müzik çalmayı durdur
 
     def pause_timer(self):
         # Timer'ı duraklat
@@ -143,6 +156,8 @@ class MeditationScreen(ctk.CTkFrame):
     def run_timer(self):
         while self.running and self.remaining > 0:
             time.sleep(1)
+            if self.paused:  # Timer duraklatıldıysa bekle
+                continue
             self.remaining -= 1
 
             # Widget'ın hala mevcut olup olmadığını kontrol edin
@@ -157,22 +172,32 @@ class MeditationScreen(ctk.CTkFrame):
             self.running = False
             self.start_pause_btn.configure(text="▶️ Başlat")
 
+            # Timer bittiğinde
+            if self.remaining <= 0 and self.running:
+                self.running = False
+                self.start_pause_btn.configure(text="▶️ Başlat")
+
     def get_audio_path(self, seans):
         """Seçilen seansın ses dosyasını döndürür ve süresini hesaplar."""
         audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
         audio_path = os.path.join(audio_dir, seans["ses_dosyasi"])
+        print(f"Ses dosyası yolu: {audio_path}")  # Debug için
         if os.path.exists(audio_path):
             self.duration = self.get_audio_duration(audio_path)  # Süreyi otomatik olarak al
             return audio_path
+        print("Ses dosyası bulunamadı!")  # Debug için
         return None  # Ses dosyası bulunamazsa None döndür
 
     def get_audio_duration(self, audio_path):
         """Ses dosyasının süresini saniye cinsinden döndürür."""
+        if not audio_path or not os.path.exists(audio_path):
+            return 0
         pygame.mixer.init()
         sound = pygame.mixer.Sound(audio_path)
         return int(sound.get_length())  # Süreyi saniye cinsinden döndür
 
     def format_time(self, seconds):
+        """Saniyeyi dakika:saniye formatına dönüştürür."""
         m, s = divmod(seconds, 60)
         return f"{int(m):02}:{int(s):02}"
 

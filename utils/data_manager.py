@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import random
 
 SETTINGS_PATH = "settings.json"
 MEDITATION_DATA_PATH = "meditation_data.json"
@@ -55,3 +56,42 @@ def update_streak():
     data["last_meditation_date"] = today
     save_meditation_data(data)
     return data["streak"]
+
+def load_audio_files():
+        """Audio klasöründeki tüm alt klasörlerden ses dosyalarını yükler."""
+        audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
+        audio_files = []
+        try:
+            for root, _, files in os.walk(audio_dir):  # Alt klasörleri de dolaş
+                for file in files:
+                    if file.lower().endswith((".mp3", ".wav")):  # Sadece ses dosyalarını seç
+                        audio_files.append(os.path.join(root, file))
+            if not audio_files:
+                print("Hiçbir ses dosyası bulunamadı!")
+            return audio_files
+        except Exception as e:
+            print(f"Ses dosyalarını yüklerken bir hata oluştu: {e}")
+            return []
+        
+
+def start_daily_meditation(load_audio_files_func, show_screen_func, go_home_func):
+    """Günlük meditasyon için rastgele bir ses dosyasını çalar ve meditasyon ekranını açar."""
+    from screens.meditation_screen import MeditationScreen  # Geçici import
+
+    audio_files = load_audio_files_func()
+    if not audio_files:
+        print("Hiçbir ses dosyası bulunamadı!")
+        return
+
+    # Rastgele bir ses dosyası seç
+    random_audio = random.choice(audio_files)
+    print(f"Çalınan ses dosyası: {random_audio}")  # Debug için
+
+    # Seans bilgisi oluştur
+    seans = {
+        "isim": "Günlük Meditasyon",
+        "ses_dosyasi":random_audio  # Sadece dosya adını al
+    }
+
+    # Meditasyon ekranını aç
+    show_screen_func(MeditationScreen, go_home_func, seans)

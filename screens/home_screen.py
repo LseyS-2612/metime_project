@@ -1,13 +1,14 @@
 import customtkinter as ctk
 import json
 import random
-from utils.data_manager import load_meditation_data, update_streak, load_settings
-from PIL import Image, ImageTk, ImageDraw
+from utils.data_manager import load_meditation_data, update_streak, load_settings , load_audio_files,start_daily_meditation
+from PIL import Image, ImageTk, ImageDraw, ImageOps, ImageEnhance
 import os
 import datetime
 from screens.profile_screen import ProfileScreen
 from screens.settings_screen import SettingsScreen
 import pygame
+
 
 class HomeScreen(ctk.CTkFrame):
     def __init__(self, master, go_meditation, go_settings, go_profile):
@@ -70,7 +71,7 @@ class HomeScreen(ctk.CTkFrame):
 
         # Buton isimleri ve işlevleri
         buttons = [
-            ("Günlük Meditasyon", lambda: print("Günlük Meditasyon")),
+            ("Günlük Meditasyon",self.start_daily_meditation),
             ("İndirilenler", lambda: print("İndirilenler")),
             ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: print("Uyku")),
@@ -89,7 +90,9 @@ class HomeScreen(ctk.CTkFrame):
                 text=text,
                 command=command,
                 width=200,
-                height=50
+                height=50,
+                font=("Times New Roman", 16, "bold"),
+
             )
             btn.grid(row=row, column=col, padx=10, pady=10)
 
@@ -159,6 +162,11 @@ class HomeScreen(ctk.CTkFrame):
             print("Arka plan klasörü bulunamadı!")
             return []
 
+
+    def start_daily_meditation(self):
+        """Günlük meditasyon için rastgele bir ses dosyasını çalar ve meditasyon ekranını açar."""
+        start_daily_meditation(load_audio_files, self.master.show_screen, self.master.show_home)
+
     def update_quote(self):
         """Sözleri ve arka planı rastgele seç ve etiketi güncelle."""
         if self.quotes and self.background_images:
@@ -166,33 +174,18 @@ class HomeScreen(ctk.CTkFrame):
             random_quote = random.choice(self.quotes)
             random_image_path = random.choice(self.background_images)
 
-            # Resmi yükle ve boyutlandır
-            image = Image.open(random_image_path).resize((500, 150))  # Çerçeve boyutuna göre yeniden boyutlandır
+            # Resmi yükle ve karartma işlemi uygula
+            image = Image.open(random_image_path).resize((500, 150), Image.Resampling.LANCZOS)
+            enhancer = ImageEnhance.Brightness(image)
+            darkened_image = enhancer.enhance(0.5)  # Parlaklığı %50 azalt
 
-            # Köşeleri yuvarlak hale getirmek için maske oluştur
-            mask = Image.new("L", image.size, 0)
-            draw = ImageDraw.Draw(mask)
-            corner_radius = 30  # Yuvarlaklık derecesi
-            draw.rounded_rectangle((0, 0, image.size[0], image.size[1]), radius=corner_radius, fill=255)
-
-            # Maskeyi uygula
-            image = image.convert("RGBA")
-            rounded_image = Image.new("RGBA", image.size)
-            rounded_image.paste(image, (0, 0), mask)
-
-            # Siyah yarı saydam katman ekle (karartma efekti)
-            overlay = Image.new("RGBA", rounded_image.size, (0, 0, 0, 100))  # Siyah yarı saydam katman
-            rounded_overlay = Image.new("RGBA", overlay.size)
-            rounded_overlay.paste(overlay, (0, 0), mask)  # Maskeyi karartma efektine uygula
-
-            # Karartma efektini resme uygula
-            rounded_image = Image.alpha_composite(rounded_image, rounded_overlay)
-
-            # Resmi tkinter uyumlu hale getir
-            self.background_image = ImageTk.PhotoImage(rounded_image)
+            # Yuvarlak köşeli hale getir
+            rounded_image = self.make_rounded_image(darkened_image, (500, 150))
+            ctk_image = ctk.CTkImage(rounded_image, size=(500, 150))  # CTkImage kullanımı
 
             # Arka plan resmini çerçeveye uygula
-            self.quote_label.configure(image=self.background_image, text="")  # Resmi göster
+            self.quote_label.configure(image=ctk_image, text="")  # Resmi göster
+            self.quote_label.image = ctk_image  # Referansı sakla
 
             # Alıntıyı metin olarak ekle
             self.quote_label.configure(
@@ -202,6 +195,16 @@ class HomeScreen(ctk.CTkFrame):
             )
         # 10 saniye sonra tekrar güncelle
         self.after(100000, self.update_quote)
+
+    def make_rounded_image(self, image, size):
+        """Bir görüntüyü yuvarlak köşeli hale getirir."""
+        image = image.resize(size, Image.Resampling.LANCZOS)  # LANCZOS kullanımı
+        mask = Image.new("L", size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.rounded_rectangle((0, 0, size[0], size[1]), radius=30, fill=255)  # Köşe yuvarlatma
+        rounded_image = ImageOps.fit(image, size, centering=(0.5, 0.5))
+        rounded_image.putalpha(mask)
+        return rounded_image
 
     def show_course_categories(self):
         """'Kurslar' butonuna tıklandığında bölümleri 2x10 düzeninde gösterir."""
@@ -242,7 +245,9 @@ class HomeScreen(ctk.CTkFrame):
                     text=bölüm["isim"],
                     command=lambda b=bölüm: self.show_sessions(b),
                     width=200,
-                    height=50
+                    height=50,
+                    font=("Times New Roman", 12, "bold"),
+
                 )
                 category_btn.grid(row=row, column=col, padx=10, pady=10)
 
@@ -280,7 +285,8 @@ class HomeScreen(ctk.CTkFrame):
                 text=f"{seans['isim']}",
                 command=lambda s=seans: self.start_meditation(s),
                 width=200,
-                height=50
+                height=50,
+                font=("Times New Roman", 12, "bold"),
             )
             session_btn.grid(row=row, column=col, padx=10, pady=10)
 

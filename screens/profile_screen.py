@@ -40,8 +40,8 @@ class ProfileScreen(ctk.CTkFrame):
             base_dir = os.path.dirname(__file__)
             photo_path = os.path.abspath(os.path.join(base_dir, "..", "assets", "profile_photo.png"))
             photo = self.make_rounded_image(photo_path, (120, 120))  # Yuvarlak fotoğraf oluştur
-            self.photo_label = ctk.CTkLabel(self, image=photo, text="")
-            self.photo_label.image = photo  # Referansı sakla
+            ctk_image = ctk.CTkImage(photo, size=(120, 120))  # CTkImage kullanımı
+            self.photo_label = ctk.CTkLabel(self, image=ctk_image, text="")
             self.photo_label.place(relx=0.5, rely=0.2, anchor="center")  # Fotoğraf en üste
             self.photo_label.bind("<Button-1>", self.change_profile_photo)  # Tıklama olayı ekle
         except FileNotFoundError:
@@ -197,4 +197,4 @@ class ProfileScreen(ctk.CTkFrame):
         draw.ellipse((0, 0, size[0], size[1]), fill=255)
         rounded_image = Image.new("RGBA", size)
         rounded_image.paste(image, (0, 0), mask)
-        return ctk.CTkImage(rounded_image, size=size)  # CTkImage kullanımı
+        return rounded_image
