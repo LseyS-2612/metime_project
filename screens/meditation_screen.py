@@ -6,12 +6,14 @@ import customtkinter as ctk
 import pygame
 from screens.home_screen import HomeScreen
 from screens.settings_screen import SettingsScreen
+from screens.base_screen import BaseScreen
 from utils.data_manager import load_settings, save_settings, load_settings, save_meditation_data, update_streak
 
 
-class MeditationScreen(ctk.CTkFrame):
+class MeditationScreen(BaseScreen):
     def __init__(self, master, go_home, seans):
         super().__init__(master)
+
         self.master = master
         self.go_home = go_home
         self.running = False

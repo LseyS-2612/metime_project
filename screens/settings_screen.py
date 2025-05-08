@@ -1,8 +1,9 @@
 import customtkinter as ctk
 from utils.data_manager import load_settings, save_settings
 import os
+from screens.base_screen import BaseScreen
 
-class SettingsScreen(ctk.CTkFrame):
+class SettingsScreen(BaseScreen):
     def __init__(self, master, go_back):
         super().__init__(master)
 

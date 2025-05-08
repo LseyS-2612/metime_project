@@ -9,9 +9,10 @@ from screens.profile_screen import ProfileScreen
 from screens.settings_screen import SettingsScreen
 from screens.quotes_screen import QuotesScreen
 import pygame
+from screens.base_screen import BaseScreen
 
 
-class HomeScreen(ctk.CTkFrame):
+class HomeScreen(BaseScreen):
     def __init__(self, master, go_meditation, go_settings, go_profile):
         super().__init__(master)
 
@@ -75,12 +76,16 @@ class HomeScreen(ctk.CTkFrame):
         settings_btn.place(x=550, y=10)  # Sağ üst köşeye yerleştir
 
         # Butonlar için bir çerçeve
-        button_frame = ctk.CTkFrame(self)
-        button_frame.place(relx=0.5, rely=0.15, anchor="n")  # Menü çerçevesi için daha aşağıya taşındı
+        button_frame = ctk.CTkFrame(
+            self,
+            fg_color=self.cget("fg_color"),  # Ana pencerenin arka plan rengini kullan
+            corner_radius=20  # Köşeleri yuvarlat
+        )
+        button_frame.place(relx=0.5, rely=0.15, anchor="n")  # Çerçeveyi ortala
 
         # Buton isimleri ve işlevleri
         buttons = [
-            ("Günlük Meditasyon",self.start_daily_meditation),
+            ("Günlük Meditasyon", self.start_daily_meditation),
             ("İndirilenler", lambda: print("İndirilenler")),
             ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: self.show_sleep_sessions()),
@@ -302,6 +307,13 @@ class HomeScreen(ctk.CTkFrame):
         courses_frame = ctk.CTkFrame(self)
         courses_frame.place(relx=0.5, rely=0.2, anchor="n")  # Çerçeveyi ortala
 
+        courses_frame = ctk.CTkFrame(
+            self,
+            fg_color=self.cget("fg_color"),  # Ana pencerenin arka plan rengini kullan
+            corner_radius=20  # Köşeleri yuvarlat
+        )
+
+        courses_frame.place(relx=0.5, rely=0.2, anchor="n")  # Çerçeveyi ortala
         # Bölümleri yükle
         try:
             base_dir = os.path.dirname(__file__)

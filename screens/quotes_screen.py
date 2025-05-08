@@ -2,23 +2,21 @@ import customtkinter as ctk
 import json
 import os
 import random
+from screens.base_screen import BaseScreen
 
-class QuotesScreen(ctk.CTkFrame):
+class QuotesScreen(BaseScreen):
     def __init__(self, master, go_home):
         super().__init__(master)
         
         self.go_home = go_home
         
-        # Arka plan rengi
-        self.configure(fg_color="#2b2b2b")
-        
-        # Geri dönüş butonu
+        # Diğer bileşenler
         back_btn = ctk.CTkButton(
             self,
             text="⬅️",
             width=40,
             height=40,
-            command=self.go_home,  # Ana ekrana dönmek için
+            command=self.go_home,
             fg_color="#212121",
             hover_color="#312e33"
         )

@@ -4,8 +4,9 @@ from PIL import Image, ImageTk, ImageDraw, ImageOps
 from utils.data_manager import load_meditation_data, save_settings, load_settings
 import os
 from screens.settings_screen import SettingsScreen
+from screens.base_screen import BaseScreen
 
-class ProfileScreen(ctk.CTkFrame):
+class ProfileScreen(BaseScreen):
     def __init__(self, master, go_home):
         super().__init__(master)
 
