@@ -22,7 +22,7 @@ class MeditationApp(ctk.CTk):
         if settings.get("theme") == "Purple & Gray":
             self.apply_theme(settings.get("theme", "Purple & Gray"))  # Varsayılan tema
         elif settings.get("theme") == "Orange & Gray":
-            self.apply_theme(settings.get("theme", "Orange % Gray"))  # Varsayılan tema
+            self.apply_theme(settings.get("theme", "Orange & Gray"))  # Varsayılan tema
         # Sayfa yerleştirme
         self.current_frame = None
         self.show_home()  # İlk açılışta ana sayfayı göster

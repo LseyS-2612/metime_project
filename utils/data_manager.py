@@ -87,10 +87,14 @@ def start_daily_meditation(load_audio_files_func, show_screen_func, go_home_func
     random_audio = random.choice(audio_files)
     print(f"Çalınan ses dosyası: {random_audio}")  # Debug için
 
+    # Ses dosyasını göreceli yola dönüştür
+    base_audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
+    relative_audio_path = os.path.relpath(random_audio, base_audio_dir).replace("\\", "/")
+
     # Seans bilgisi oluştur
     seans = {
         "isim": "Günlük Meditasyon",
-        "ses_dosyasi":random_audio  # Sadece dosya adını al
+        "ses_dosyasi": relative_audio_path  # Göreceli dosya yolunu kullan
     }
 
     # Meditasyon ekranını aç
