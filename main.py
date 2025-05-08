@@ -36,10 +36,7 @@ class MeditationApp(ctk.CTk):
 
     def clear_frame(self):
         if self.current_frame:
-            if isinstance(self.current_frame, MeditationScreen):
-                self.current_frame.cleanup()  # Özel temizlik işlemleri
             self.current_frame.destroy()
-    
 
     def show_screen(self, screen_class, *args):
         self.clear_frame()

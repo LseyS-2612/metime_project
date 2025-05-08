@@ -7,6 +7,7 @@ import os
 import datetime
 from screens.profile_screen import ProfileScreen
 from screens.settings_screen import SettingsScreen
+from screens.quotes_screen import QuotesScreen
 import pygame
 
 
@@ -84,7 +85,7 @@ class HomeScreen(ctk.CTkFrame):
             ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: self.show_sleep_sessions()),
             ("Meydan Okuma", lambda: print("Meydan Okuma")),
-            ("Acil Durum", lambda: print("Acil Durum")),
+            ("Acil Durum", lambda: self.show_emergency_meditations()),
             ("Favoriler", lambda: print("Favoriler")),
             ("Kurslar", self.show_course_categories),
         ]
@@ -114,15 +115,18 @@ class HomeScreen(ctk.CTkFrame):
         )
         self.quote_frame.place(relx=0.5, rely=0.75, anchor="center")  # Daha yukarı taşımak için rely değerini azalttık
 
+        
         self.quote_label = ctk.CTkLabel(
             self.quote_frame,
             text="",
             font=("Times New Roman", 20, "bold"),
             wraplength=480,
             justify="center",
-            anchor="center"
+            anchor="center",
+            cursor="hand2"  # İmleç el işaretine dönüşür, tıklanabilir olduğunu belirtir
         )
         self.quote_label.place(relx=0.5, rely=0.5, anchor="center")  # Ortaya yerleştir
+        self.quote_label.bind("<Button-1>", lambda e: self.show_quotes_screen())  # Tıklama işlevi ekle
 
         # Resimleri ve sözleri yükle
         self.quotes = self.load_quotes()
@@ -154,6 +158,8 @@ class HomeScreen(ctk.CTkFrame):
         except FileNotFoundError:
             print("quotes.json dosyası bulunamadı!")
             return []
+
+
 
     def load_background_images(self):
         """Arka plan resimlerini yükler."""
@@ -541,4 +547,63 @@ class HomeScreen(ctk.CTkFrame):
         """Profil ekranını gösterir."""
         self.master.clear_frame()
         self.master.current_frame = ProfileScreen(self.master, self.master.show_home)
+        self.master.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    def show_emergency_meditations(self):
+        """Acil durumlar için meditasyon seçeneklerini gösterir."""
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Geri dönüş butonu
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",
+            width=40,
+            height=40,
+            command=self.load_home_screen,  # Ana ekrana dönmek için
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        back_btn.place(x=10, y=10)
+
+        # Başlık
+        title_label = ctk.CTkLabel(
+            self,
+            text="Acil Durum Meditasyonları",
+            font=("Helvetica", 20, "bold"),
+            text_color="#FFFFFF"
+        )
+        title_label.place(relx=0.5, rely=0.2, anchor="center")
+
+        # Meditasyon seçenekleri
+        emergency_options = [
+            {"isim": "Deprem Sonrası Rahatlama", "ses_dosyasi": "earthquake_relief.mp3"},
+            {"isim": "Panik Atak Kontrolü", "ses_dosyasi": "panic_attack_control.mp3"},
+            {"isim": "Stres Azaltma", "ses_dosyasi": "stress_relief.mp3"},
+        ]
+
+        # Seçenekler için bir çerçeve
+        options_frame = ctk.CTkFrame(self)
+        options_frame.place(relx=0.5, rely=0.4, anchor="n")
+
+        # 2x2 düzeni
+        for i, option in enumerate(emergency_options):
+            row = i // 2
+            col = i % 2
+            option_btn = ctk.CTkButton(
+                options_frame,
+                text=option["isim"],
+                command=lambda o=option: self.play_audio(o),  # Seçilen meditasyonu çal
+                width=200,
+                height=50,
+                font=("Times New Roman", 12, "bold"),
+            )
+            option_btn.grid(row=row, column=col, padx=10, pady=10)
+
+    def show_quotes_screen(self):
+        """Quotes ekranını gösterir."""
+        from screens.quotes_screen import QuotesScreen  # Burada import et
+        self.master.clear_frame()
+        self.master.current_frame = QuotesScreen(self.master, self.master.show_home)
         self.master.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
