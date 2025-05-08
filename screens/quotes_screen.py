@@ -77,6 +77,15 @@ class QuotesScreen(ctk.CTkFrame):
             )
             author_label.pack(padx=15, pady=(0, 15), anchor="e")
         
+        # Temaya göre buton renklerini belirle
+        theme = self.get_current_theme()
+        if theme == "Purple & Gray":
+            button_colors = {"fg_color": "#521a78", "hover_color": "#3e135b"}  # Purple & Gray renkleri
+        elif theme == "Orange & Gray":
+            button_colors = {"fg_color": "#FF6A13", "hover_color": "#e65a00"}  # Orange & Gray renkleri
+        else:
+            button_colors = {"fg_color": "#424242", "hover_color": "#535353"}  # Varsayılan renkler
+
         # Favori alıntı eklemek için buton
         add_favorite_btn = ctk.CTkButton(
             self,
@@ -84,8 +93,8 @@ class QuotesScreen(ctk.CTkFrame):
             width=150,
             height=40,
             command=self.show_add_quote_dialog,
-            fg_color="#4CAF50",
-            hover_color="#45A049"
+            fg_color=button_colors["fg_color"],
+            hover_color=button_colors["hover_color"]
         )
         add_favorite_btn.place(relx=0.5, rely=0.9, anchor="center")
     
@@ -164,3 +173,19 @@ class QuotesScreen(ctk.CTkFrame):
             
         except Exception as e:
             print(f"Alıntı kaydedilirken hata oluştu: {e}")
+    def get_current_theme(self):
+        """Geçerli temayı ayarlardan alır ve temaya göre renk döndürür."""
+        base_dir = os.path.dirname(__file__)
+        settings_path = os.path.abspath(os.path.join(base_dir, "..", "utils", "settings.json"))
+        try:
+            with open(settings_path, "r", encoding="utf-8") as file:
+                settings = json.load(file)
+                theme = settings.get("theme", "Purple & Gray")  # Varsayılan tema
+                if theme == "Purple & Gray":
+                    return {"theme": theme, "button_colors": {"fg_color": "#521a78", "hover_color": "#3e135b"}}
+                elif theme == "Orange & Gray":
+                    return {"theme": theme, "button_colors": {"fg_color": "#FF6A13", "hover_color": "#e65a00"}}
+                else:
+                    return {"theme": theme, "button_colors": {"fg_color": "#424242", "hover_color": "#535353"}}  # Varsayılan renkler
+        except FileNotFoundError:
+            return {"theme": "Purple & Gray", "button_colors": {"fg_color": "#521a78", "hover_color": "#3e135b"}}  # Varsayılan tema ve renkler
