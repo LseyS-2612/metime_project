@@ -43,15 +43,27 @@ class MeditationScreen(ctk.CTkFrame):
         self.timer_label = ctk.CTkLabel(self, text=self.format_time(self.remaining), font=("Arial", 40))
         self.timer_label.pack(pady=10)
         # 4. Slider (Ses İleri/Geri Sarma)
+        slider_frame = ctk.CTkFrame(self)  # Slider ve butonlar için bir çerçeve oluştur
+        slider_frame.pack(pady=10)
+
+        # 10 saniye geri sarma butonu
+        self.rewind_btn = ctk.CTkButton(slider_frame, text="⏪ 10s", command=self.rewind_audio, width=60)
+        self.rewind_btn.pack(side="left", padx=5)
+
+        # Slider
         self.seek_slider = ctk.CTkSlider(
-            self,  # master parametresi
+            slider_frame,
             from_=0,
             to=self.duration,
             command=self.seek_audio,
             number_of_steps=self.duration
         )
         self.seek_slider.set(0)  # Varsayılan başlangıç değeri
-        self.seek_slider.pack(pady=10)
+        self.seek_slider.pack(side="left", fill="x", expand=True, padx=5)
+
+        # 10 saniye ileri sarma butonu
+        self.forward_btn = ctk.CTkButton(slider_frame, text="10s ⏩", command=self.forward_audio, width=60)
+        self.forward_btn.pack(side="left", padx=5)
 
         # 5. Başlat/Duraklat butonu
         self.start_pause_btn = ctk.CTkButton(self, text="▶️ Başlat", command=self.start_or_pause_meditation)
@@ -234,6 +246,90 @@ class MeditationScreen(ctk.CTkFrame):
         self.seek_slider.set(0)  # Slider'ı sıfırla
         self.start_pause_btn.configure(text="▶️ Başlat")  # Butonu başlat durumuna getir
 
+    def start_or_pause_meditation(self):
+        if not self.running:
+            # Eğer meditasyon sıfırlanmışsa (bittiği için)
+            if self.remaining == 0:
+                self.remaining = self.duration  # Süreyi baştan başlat
+                self.seek_slider.set(0)  # Slider'ı başa al
+                self.timer_label.configure(text=self.format_time(self.remaining))  # Timer'ı güncelle
+
+            # Meditasyonu başlat
+            self.running = True
+            self.paused = False
+            self.start_pause_btn.configure(text="⏸️ Duraklat")
+
+            # Eğer müzik çalmıyorsa başlat
+            if not pygame.mixer.music.get_busy():
+                if self.audio_path:
+                    pygame.mixer.music.load(self.audio_path)
+                    pygame.mixer.music.play()
+                else:
+                    ctk.CTkLabel(self, text="⚠️ Ses dosyası bulunamadı!", font=("Arial", 14, "bold"), fg_color="red").pack(pady=10)
+                    return
+            else:
+                pygame.mixer.music.unpause()  # Eğer duraklatılmışsa devam ettir
+
+            # Timer thread'i başlat
+            threading.Thread(target=self.run_timer, daemon=True).start()
+        elif self.paused:
+            # Duraklatıldıysa devam et
+            self.paused = False
+            self.running = True
+            self.start_pause_btn.configure(text="⏸️ Duraklat")
+            pygame.mixer.music.unpause()  # Müziği devam ettir
+        else:
+            # Devam ediyorsa duraklat
+            self.paused = True
+            self.running = False
+            self.start_pause_btn.configure(text="▶️ Devam Et")
+            pygame.mixer.music.pause()  # Müziği duraklat
+
+    def cleanup(self):
+        self.running = False  # Timer'ı durdur
+        pygame.mixer.music.stop()  # Müzik çalmayı durdur
+
+    def pause_timer(self):
+        # Timer'ı duraklat
+        self.running = False
+
+    def resume_timer(self):
+        # Timer'ı devam ettir
+        self.running = True
+        threading.Thread(target=self.run_timer, daemon=True).start()
+
+    def run_timer(self):
+        while self.running and self.remaining > 0:
+            time.sleep(1)
+            if self.paused:  # Timer duraklatıldıysa bekle
+                continue
+            self.remaining -= 1
+
+            # Widget'ın hala mevcut olup olmadığını kontrol edin
+            if not self.winfo_exists():
+                break
+
+            # Timer'ı güncelle
+            self.timer_label.configure(text=self.format_time(self.remaining))
+
+            # Slider'ı güncelle
+            self.seek_slider.set(self.duration - self.remaining)
+
+        # Timer bittiğinde
+        if self.remaining <= 0 and self.running:
+            self.running = False
+            self.start_pause_btn.configure(text="▶️ Başlat")
+            self.end_session()  # Meditasyon bittiğinde sıfırlama işlemini çağır
+
+    def end_session(self):
+        """Meditasyon bittiğinde timer ve slider'ı sıfırla."""
+        self.running = False
+        pygame.mixer.music.stop()  # Müziği durdur
+        self.remaining = 0  # Timer'ı sıfırla
+        self.timer_label.configure(text=self.format_time(self.remaining))  # Timer'ı güncelle
+        self.seek_slider.set(0)  # Slider'ı sıfırla
+        self.start_pause_btn.configure(text="▶️ Başlat")  # Butonu başlat durumuna getir
+
     def get_audio_path(self, seans):
         """Seçilen seansın ses dosyasını döndürür ve süresini hesaplar."""
         audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
@@ -268,3 +364,17 @@ class MeditationScreen(ctk.CTkFrame):
         self.running = False  # Timer'ı durdur
         pygame.mixer.music.stop()  # Müzik çalmayı durdur
         self.go_home()
+
+    def rewind_audio(self):
+        """Sesi 10 saniye geri sar."""
+        if self.audio_path and pygame.mixer.music.get_busy():
+            new_time = max(0, self.seek_slider.get() - 10)  # 10 saniye geri sar
+            self.seek_slider.set(new_time)
+            self.seek_audio(new_time)
+
+    def forward_audio(self):
+        """Sesi 10 saniye ileri sar."""
+        if self.audio_path and pygame.mixer.music.get_busy():
+            new_time = min(self.duration, self.seek_slider.get() + 10)  # 10 saniye ileri sar
+            self.seek_slider.set(new_time)
+            self.seek_audio(new_time)
