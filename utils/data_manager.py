@@ -2,6 +2,8 @@ import json
 import os
 import time
 import random
+import customtkinter as ctk
+
 
 SETTINGS_PATH = "settings.json"
 MEDITATION_DATA_PATH = "meditation_data.json"
@@ -99,3 +101,45 @@ def start_daily_meditation(load_audio_files_func, show_screen_func, go_home_func
 
     # Meditasyon ekranını aç
     show_screen_func(MeditationScreen, go_home_func, seans)
+
+    
+def create_menu_bar(self, parent):
+        """Menü çubuğunu oluşturur."""
+        menu_frame = ctk.CTkFrame(parent, height=60, fg_color="#343434")  # Menü çubuğu rengi
+        menu_frame.pack(side="top", fill="x")
+
+        # Menü çubuğundaki butonlar
+        home_btn = ctk.CTkButton(
+            menu_frame,
+            text="🏠 Ana Sayfa",
+            command=self.show_home,
+            width=100,
+            height=40,
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        home_btn.place(x=10, y=10)
+
+        settings_btn = ctk.CTkButton(
+            menu_frame,
+            text="⚙️ Ayarlar",
+            command=self.show_settings,
+            width=100,
+            height=40,
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        settings_btn.place(x=120, y=10)
+
+        profile_btn = ctk.CTkButton(
+            menu_frame,
+            text="👤 Profil",
+            command=self.show_profile,
+            width=100,
+            height=40,
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        profile_btn.place(x=230, y=10)
+
+        return menu_frame   

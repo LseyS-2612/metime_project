@@ -22,14 +22,22 @@ class HomeScreen(ctk.CTkFrame):
         menu_frame = ctk.CTkFrame(self, height=60, fg_color="#343434")
         menu_frame.pack(side="top", fill="x")
 
-        # Günün saatine göre selamlama mesajı
-        self.greeting_label = ctk.CTkLabel(
+        # # Günün saatine göre selamlama mesajı
+        # self.greeting_label = ctk.CTkLabel(
+        #     menu_frame,
+        #     text=self.get_greeting_message(),
+        #     font=("Times New Roman", 20, "bold"),  # Daha büyük ve italik bir yazı tipi
+        #     text_color="#FFFFFF"  # Beyaz renk
+        # )
+        # self.greeting_label.place(relx=15, rely=15)  # Sol üst köşeye yerleştir
+
+        self.application_name_label = ctk.CTkLabel(
             menu_frame,
-            text=self.get_greeting_message(),
-            font=("Times New Roman", 24, "bold"),  # Daha büyük ve italik bir yazı tipi
+            text="MeTime",
+            font=("Verdana", 28, "bold"),  # Daha büyük ve italik bir yazı tipi
             text_color="#FFFFFF"  # Beyaz renk
         )
-        self.greeting_label.place(x=15, y=15)  # Sol üst köşeye yerleştir
+        self.application_name_label.place(relx=0.5, rely=0.5, anchor="center")  # Ortalanmış şekilde yerleştir
 
         # Streak bilgisi (ikon olarak)
         streak = load_meditation_data().get("streak", 0)
@@ -39,7 +47,7 @@ class HomeScreen(ctk.CTkFrame):
             font=("Arial", 14, "bold"),  # Daha küçük ve ikon stili
             text_color="#FFFFFF"
         )
-        streak_icon.place(x=460, y=15)  # Ayarlar ikonunun soluna yerleştir
+        streak_icon.place(x=460, y=18)  # Ayarlar ikonunun soluna yerleştir
 
         # Profil butonu
         profile_btn = ctk.CTkButton(
@@ -74,7 +82,7 @@ class HomeScreen(ctk.CTkFrame):
             ("Günlük Meditasyon",self.start_daily_meditation),
             ("İndirilenler", lambda: print("İndirilenler")),
             ("Zamanlayıcı", self.show_timer_screen),
-            ("Uyku", lambda: print("Uyku")),
+            ("Uyku", lambda: self.show_sleep_sessions()),
             ("Meydan Okuma", lambda: print("Meydan Okuma")),
             ("Acil Durum", lambda: print("Acil Durum")),
             ("Favoriler", lambda: print("Favoriler")),
@@ -92,7 +100,7 @@ class HomeScreen(ctk.CTkFrame):
                 width=200,
                 height=50,
                 font=("Times New Roman", 16, "bold"),
-
+                corner_radius=20,  # Köşeleri yuvarlat
             )
             btn.grid(row=row, column=col, padx=10, pady=10)
 
@@ -167,6 +175,61 @@ class HomeScreen(ctk.CTkFrame):
         """Günlük meditasyon için rastgele bir ses dosyasını çalar ve meditasyon ekranını açar."""
         start_daily_meditation(load_audio_files, self.master.show_screen, self.master.show_home)
 
+    def show_sleep_sessions(self):
+        """'Uyku' butonuna tıklandığında 'Uyku İçin Meditasyon' bölümündeki seansları gösterir."""
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Geri dönüş butonu
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",
+            width=40,
+            height=40,
+            command=self.load_home_screen,  # Ana ekrana dönmek için
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        back_btn.place(x=10, y=10)
+
+        # Seanslar için bir çerçeve
+        sessions_frame = ctk.CTkFrame(self)
+        sessions_frame.place(relx=0.5, rely=0.2, anchor="n")
+
+        # "Uyku İçin Meditasyon" bölümünü yükle
+        try:
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
+
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            # "Uyku İçin Meditasyon" bölümünü bul
+            sleep_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Uyku İçin Meditasyon"), None)
+
+            if sleep_section:
+                # 2x10 düzeni
+                for i, seans in enumerate(sleep_section["seanslar"]):
+                    row = i // 2
+                    col = i % 2
+                    session_btn = ctk.CTkButton(
+                        sessions_frame,
+                        text=f"{seans['isim']}",
+                        command=lambda s=seans: self.start_meditation(s),
+                        width=200,
+                        height=50,
+                        font=("Times New Roman", 12, "bold"),
+                    )
+                    session_btn.grid(row=row, column=col, padx=10, pady=10)
+            else:
+                print("'Uyku İçin Meditasyon' bölümü bulunamadı!")
+
+        except FileNotFoundError:
+            print("courses.json dosyası bulunamadı!")
+
+
+
     def update_quote(self):
         """Sözleri ve arka planı rastgele seç ve etiketi güncelle."""
         if self.quotes and self.background_images:
@@ -190,7 +253,7 @@ class HomeScreen(ctk.CTkFrame):
             # Alıntıyı metin olarak ekle
             self.quote_label.configure(
                 text=f'"{random_quote["quote"]}"\n\n- {random_quote["author"]}',
-                font=("Times New Roman", 20, "bold"),
+                font=("Verdana", 16, "bold"),
                 compound="center"  # Resim ve metni birleştir
             )
         # 10 saniye sonra tekrar güncelle
@@ -209,6 +272,11 @@ class HomeScreen(ctk.CTkFrame):
     def show_course_categories(self):
         """'Kurslar' butonuna tıklandığında bölümleri 2x10 düzeninde gösterir."""
         # Önce mevcut içerikleri temizle
+        menu_frame = ctk.CTkFrame(self, height=60, fg_color="#343434")
+        menu_frame.pack(side="top", fill="x")
+        
+
+
         for widget in self.winfo_children():
             widget.destroy()
 
@@ -271,22 +339,21 @@ class HomeScreen(ctk.CTkFrame):
             hover_color="#312e33"
         )
         back_btn.place(x=10, y=10)
-
         # Seanslar için bir çerçeve
         sessions_frame = ctk.CTkFrame(self)
-        sessions_frame.place(relx=0.5, rely=0.2, anchor="n")
+        sessions_frame.place(relx=0.5, rely=0.5, anchor="center")  # Çerçeveyi ortala
 
         # 2x10 düzeni
         for i, seans in enumerate(bölüm["seanslar"]):
             row = i // 2
             col = i % 2
             session_btn = ctk.CTkButton(
-                sessions_frame,
-                text=f"{seans['isim']}",
-                command=lambda s=seans: self.start_meditation(s),
-                width=200,
-                height=50,
-                font=("Times New Roman", 12, "bold"),
+            sessions_frame,
+            text=f"{seans['isim']}",
+            command=lambda s=seans: self.start_meditation(s),
+            width=200,
+            height=50,
+            font=("Times New Roman", 12, "bold"),
             )
             session_btn.grid(row=row, column=col, padx=10, pady=10)
 
@@ -363,7 +430,8 @@ class HomeScreen(ctk.CTkFrame):
             width=100,
             height=40,
             fg_color=button_colors["fg_color"],  # Temaya uygun renk
-            hover_color=button_colors["hover_color"]  # Temaya uygun hover rengi
+            hover_color=button_colors["hover_color"],
+            corner_radius=20  
         )
         start_btn.place(relx=0.5, rely=0.5, anchor="center")
 
