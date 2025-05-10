@@ -86,7 +86,7 @@ class HomeScreen(BaseScreen):
         # Buton isimleri ve işlevleri
         buttons = [
             ("Günlük Meditasyon", self.start_daily_meditation),
-            ("İndirilenler", lambda: print("İndirilenler")),
+            ("İndirilenler", self.show_downloadable_audio),
             ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: self.show_sleep_sessions()),
             ("Meydan Okuma", self.show_challenge_courses),
@@ -692,3 +692,100 @@ class HomeScreen(BaseScreen):
 
         except FileNotFoundError:
             print("courses.json dosyası bulunamadı!")
+            
+    
+    def show_downloadable_audio(self):
+        """İndirilebilir ses dosyalarını gösterir ve indirme işlemini gerçekleştirir."""
+        import shutil
+        from tkinter import filedialog, messagebox
+
+        # Önce mevcut içerikleri temizle
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Geri dönüş butonu
+        back_btn = ctk.CTkButton(
+            self,
+            text="⬅️",
+            width=40,
+            height=40,
+            command=self.load_home_screen,  # Ana ekrana dönmek için
+            fg_color="#212121",
+            hover_color="#312e33"
+        )
+        back_btn.place(x=10, y=10)
+
+        # Başlık
+        title_label = ctk.CTkLabel(
+            self,
+            text="İndirilebilir Ses Dosyaları",
+            font=("Helvetica", 20, "bold"),
+            text_color="#FFFFFF"
+        )
+        title_label.place(relx=0.5, rely=0.2, anchor="center")
+
+        # Ses dosyalarını listelemek için bir çerçeve
+        audio_frame = ctk.CTkFrame(self)
+        audio_frame.place(relx=0.5, rely=0.3, anchor="n")
+
+        # JSON dosyasını yükle
+        try:
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
+
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            # Tüm bölümleri ve seansları listele
+            row = 0
+            for bölüm in data["Bölümler"]:
+                for seans in bölüm["seanslar"]:
+                    # Seans ismi
+                    session_label = ctk.CTkLabel(
+                        audio_frame,
+                        text=seans["isim"],
+                        font=("Times New Roman", 12, "bold"),
+                        text_color="#FFFFFF"
+                    )
+                    session_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+
+                    # İndir butonu
+                    download_btn = ctk.CTkButton(
+                        audio_frame,
+                        text="İndir",
+                        command=lambda s=seans: self.download_audio(s),
+                        width=100,
+                        height=30,
+                        font=("Times New Roman", 10, "bold"),
+                    )
+                    download_btn.grid(row=row, column=1, padx=10, pady=5)
+                    row += 1
+
+        except FileNotFoundError:
+            print("courses.json dosyası bulunamadı!")
+            messagebox.showerror("Hata", "courses.json dosyası bulunamadı!")
+
+    def download_audio(self, seans):
+        """Seçilen ses dosyasını indir."""
+        import shutil
+        from tkinter import filedialog, messagebox
+
+        # Ses dosyasının tam yolunu oluştur
+        base_dir = os.path.dirname(__file__)
+        audio_dir = os.path.abspath(os.path.join(base_dir, "..", "audio"))
+        audio_path = os.path.join(audio_dir, seans["ses_dosyasi"])
+
+        if os.path.exists(audio_path):
+            # Kullanıcıdan hedef klasörü seçmesini iste
+            target_dir = filedialog.askdirectory(title="Hedef Klasörü Seçin")
+            if target_dir:
+                try:
+                    # Dosyayı hedef klasöre kopyala
+                    shutil.copy(audio_path, target_dir)
+                    messagebox.showinfo("Başarılı", f"{seans['isim']} başarıyla indirildi!")
+                except Exception as e:
+                    print(f"Dosya indirilemedi: {e}")
+                    messagebox.showerror("Hata", f"Dosya indirilemedi: {e}")
+        else:
+            print(f"Ses dosyası bulunamadı: {audio_path}")
+            messagebox.showerror("Hata", f"Ses dosyası bulunamadı: {audio_path}")
