@@ -4,6 +4,8 @@ import threading
 import json
 import customtkinter as ctk
 import pygame
+import tkinter.messagebox as messagebox  # Mesaj kutusu göstermek için
+import re  # Büyük harflerle başlayan kelimeleri ayıklamak için
 from screens.home_screen import HomeScreen
 from screens.settings_screen import SettingsScreen
 from screens.base_screen import BaseScreen
@@ -81,7 +83,7 @@ class MeditationScreen(BaseScreen):
         self.start_pause_btn = ctk.CTkButton(self, text="▶️ Başlat", command=self.start_or_pause_meditation)
         self.start_pause_btn.pack(pady=10)
 
-        # Favorilere Ekle butonu
+        # Favorilere Ekle/Çıkar butonu
         self.add_to_favorites_btn = ctk.CTkButton(
             self,
             text="⭐ Favorilere Ekle",
@@ -130,7 +132,7 @@ class MeditationScreen(BaseScreen):
         pygame.mixer.music.set_volume(0.5)
 
     def show_favorites_screen(self):
-        """Favoriler ekranını gösterir ve ses dosyalarını oynatılabilir hale getirir."""
+        """Favoriler ekranını gösterir ve dosya isimlerini listeler."""
         favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
         if not os.path.exists(favorites_file):
             ctk.CTkLabel(self, text="Henüz favorilere eklenmiş bir ses dosyası yok.", font=("Arial", 14)).pack(pady=20)
@@ -142,8 +144,12 @@ class MeditationScreen(BaseScreen):
         ctk.CTkLabel(self, text="Favoriler", font=("Arial", 22, "bold")).pack(pady=10)
 
         for audio_file in favorites:
-            # Ses dosyasının adını göster
-            audio_label = ctk.CTkLabel(self, text=audio_file, font=("Arial", 14))
+            # Dosya adını uzantısız olarak al ve büyük harflerle başlayan kelimeleri ayıkla
+            file_name = os.path.splitext(audio_file)[0]
+            capitalized_words = " ".join(re.findall(r'\b[A-Z][a-z]*\b', file_name))
+
+            # Dosya adını göster
+            audio_label = ctk.CTkLabel(self, text=capitalized_words, font=("Arial", 14))
             audio_label.pack(pady=5)
 
             # Oynat butonu
@@ -156,9 +162,41 @@ class MeditationScreen(BaseScreen):
             )
             play_button.pack(pady=5)
 
+            # Favorilerden çıkar butonu (soft renkler)
+            remove_button = ctk.CTkButton(
+                self,
+                text="❌ Favorilerden Çıkar",
+                command=lambda file=audio_file: self.remove_from_favorites(file),
+                width=150,
+                height=30,
+                fg_color="#FFC1C1",  # Soft pembe
+                hover_color="#FFB3B3"  # Daha koyu soft pembe
+            )
+            remove_button.pack(pady=5)
+
         # Geri butonu
         self.back_btn = ctk.CTkButton(self, text="⬅️", command=self.stop_and_return, width=40, height=40, fg_color="#212121", hover_color="#312e33")
         self.back_btn.place(x=5, y=5)
+
+    def remove_from_favorites(self, audio_file):
+        """Favorilerden bir ses dosyasını çıkarır."""
+        favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
+        if not os.path.exists(favorites_file):
+            messagebox.showinfo("Favoriler", "Favoriler dosyası bulunamadı.")
+            return
+
+        with open(favorites_file, "r", encoding="utf-8") as file:
+            favorites = json.load(file)
+
+        if audio_file in favorites:
+            favorites.remove(audio_file)
+            with open(favorites_file, "w", encoding="utf-8") as file:
+                json.dump(favorites, file, ensure_ascii=False, indent=4)
+            messagebox.showinfo("Favoriler", f"{audio_file} favorilerden çıkarıldı!")
+            self.clear_frame()
+            self.show_favorites_screen()  # Ekranı güncelle
+        else:
+            messagebox.showinfo("Favoriler", f"{audio_file} favorilerde bulunamadı.")
 
     def play_favorite_audio(self, audio_file):
         """Favorilerdeki bir ses dosyasını çalar."""
@@ -360,7 +398,7 @@ class MeditationScreen(BaseScreen):
             self.seek_audio(new_time)
 
     def add_to_favorites(self, seans):
-        """Seçilen ses dosyasını favorilere ekler."""
+        """Seçilen ses dosyasını favorilere ekler veya çıkarır."""
         favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
         favorites = []
 
@@ -369,11 +407,14 @@ class MeditationScreen(BaseScreen):
             with open(favorites_file, "r", encoding="utf-8") as file:
                 favorites = json.load(file)
 
-        # Eğer ses dosyası zaten favorilerde yoksa ekle
-        if seans["ses_dosyasi"] not in favorites:
+        # Favorilere ekleme veya çıkarma işlemi
+        if seans["ses_dosyasi"] in favorites:
+            favorites.remove(seans["ses_dosyasi"])
+            with open(favorites_file, "w", encoding="utf-8") as file:
+                json.dump(favorites, file, ensure_ascii=False, indent=4)
+            messagebox.showinfo("Favoriler", f"{seans['ses_dosyasi']} favorilerden çıkarıldı!")
+        else:
             favorites.append(seans["ses_dosyasi"])
             with open(favorites_file, "w", encoding="utf-8") as file:
                 json.dump(favorites, file, ensure_ascii=False, indent=4)
-            print(f"{seans['ses_dosyasi']} favorilere eklendi!")
-        else:
-            print(f"{seans['ses_dosyasi']} zaten favorilerde!")
+            messagebox.showinfo("Favoriler", f"{seans['ses_dosyasi']} favorilere eklendi!")
