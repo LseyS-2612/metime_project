@@ -21,6 +21,16 @@ class MeditationScreen(BaseScreen):
         self.audio_path = None
         self.hide_slider_job = None
 
+        if seans["ses_dosyasi"] == "favorites":
+            # Favoriler ekranı
+            self.show_favorites_screen()
+        else:
+            # Günlük meditasyon ekranı
+            self.setup_meditation_screen(seans)
+
+    def setup_meditation_screen(self, seans):
+        """Meditasyon ekranını hazırlar."""
+
         # Varsayılan süreyi başlat
         self.duration = 0  # Varsayılan olarak 0 saniye
         self.remaining = 0  # Geri sayım için süre
@@ -71,6 +81,16 @@ class MeditationScreen(BaseScreen):
         self.start_pause_btn = ctk.CTkButton(self, text="▶️ Başlat", command=self.start_or_pause_meditation)
         self.start_pause_btn.pack(pady=10)
 
+        # Favorilere Ekle butonu
+        self.add_to_favorites_btn = ctk.CTkButton(
+            self,
+            text="⭐ Favorilere Ekle",
+            command=lambda: self.add_to_favorites(seans),
+            width=200,
+            height=40
+        )
+        self.add_to_favorites_btn.pack(pady=10)  # Başlat butonunun altına ekleniyor
+
         # Geri butonu
         self.back_btn = ctk.CTkButton(self, text="⬅️", command=self.stop_and_return, width=40, height=40, fg_color="#212121", hover_color="#312e33")
         self.back_btn.place(x=5, y=5)  # Sol üst köşeye yerleştir
@@ -109,6 +129,49 @@ class MeditationScreen(BaseScreen):
         # Başlangıçta sesi ayarla
         pygame.mixer.music.set_volume(0.5)
 
+    def show_favorites_screen(self):
+        """Favoriler ekranını gösterir ve ses dosyalarını oynatılabilir hale getirir."""
+        favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
+        if not os.path.exists(favorites_file):
+            ctk.CTkLabel(self, text="Henüz favorilere eklenmiş bir ses dosyası yok.", font=("Arial", 14)).pack(pady=20)
+            return
+
+        with open(favorites_file, "r", encoding="utf-8") as file:
+            favorites = json.load(file)
+
+        ctk.CTkLabel(self, text="Favoriler", font=("Arial", 22, "bold")).pack(pady=10)
+
+        for audio_file in favorites:
+            # Ses dosyasının adını göster
+            audio_label = ctk.CTkLabel(self, text=audio_file, font=("Arial", 14))
+            audio_label.pack(pady=5)
+
+            # Oynat butonu
+            play_button = ctk.CTkButton(
+                self,
+                text="▶️ Oynat",
+                command=lambda file=audio_file: self.play_favorite_audio(file),
+                width=100,
+                height=30
+            )
+            play_button.pack(pady=5)
+
+        # Geri butonu
+        self.back_btn = ctk.CTkButton(self, text="⬅️", command=self.stop_and_return, width=40, height=40, fg_color="#212121", hover_color="#312e33")
+        self.back_btn.place(x=5, y=5)
+
+    def play_favorite_audio(self, audio_file):
+        """Favorilerdeki bir ses dosyasını çalar."""
+        audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
+        audio_path = os.path.join(audio_dir, audio_file)
+
+        if os.path.exists(audio_path):
+            pygame.mixer.init()
+            pygame.mixer.music.load(audio_path)
+            pygame.mixer.music.play()
+            print(f"{audio_file} çalınıyor...")
+        else:
+            print(f"Ses dosyası bulunamadı: {audio_path}")
 
     def get_audio_name_from_courses(self, audio_path):
         """Ses dosyasına karşılık gelen ismi courses.json dosyasından alır."""
@@ -125,7 +188,6 @@ class MeditationScreen(BaseScreen):
                             return audio_file_name
 
         return audio_file_name
-
 
     def show_volume_slider(self, event=None):
         """Slider'ı göster."""
@@ -163,90 +225,6 @@ class MeditationScreen(BaseScreen):
             # Timer'ı güncelle
             self.remaining = self.duration - int(value)
             self.timer_label.configure(text=self.format_time(self.remaining))
-
-    def start_or_pause_meditation(self):
-        if not self.running:
-            # Eğer meditasyon sıfırlanmışsa (bittiği için)
-            if self.remaining == 0:
-                self.remaining = self.duration  # Süreyi baştan başlat
-                self.seek_slider.set(0)  # Slider'ı başa al
-                self.timer_label.configure(text=self.format_time(self.remaining))  # Timer'ı güncelle
-
-            # Meditasyonu başlat
-            self.running = True
-            self.paused = False
-            self.start_pause_btn.configure(text="⏸️ Duraklat")
-
-            # Eğer müzik çalmıyorsa başlat
-            if not pygame.mixer.music.get_busy():
-                if self.audio_path:
-                    pygame.mixer.music.load(self.audio_path)
-                    pygame.mixer.music.play()
-                else:
-                    ctk.CTkLabel(self, text="⚠️ Ses dosyası bulunamadı!", font=("Arial", 14, "bold"), fg_color="red").pack(pady=10)
-                    return
-            else:
-                pygame.mixer.music.unpause()  # Eğer duraklatılmışsa devam ettir
-
-            # Timer thread'i başlat
-            threading.Thread(target=self.run_timer, daemon=True).start()
-        elif self.paused:
-            # Duraklatıldıysa devam et
-            self.paused = False
-            self.running = True
-            self.start_pause_btn.configure(text="⏸️ Duraklat")
-            pygame.mixer.music.unpause()  # Müziği devam ettir
-        else:
-            # Devam ediyorsa duraklat
-            self.paused = True
-            self.running = False
-            self.start_pause_btn.configure(text="▶️ Devam Et")
-            pygame.mixer.music.pause()  # Müziği duraklat
-
-    def cleanup(self):
-        self.running = False  # Timer'ı durdur
-        pygame.mixer.music.stop()  # Müzik çalmayı durdur
-
-    def pause_timer(self):
-        # Timer'ı duraklat
-        self.running = False
-
-    def resume_timer(self):
-        # Timer'ı devam ettir
-        self.running = True
-        threading.Thread(target=self.run_timer, daemon=True).start()
-
-    def run_timer(self):
-        while self.running and self.remaining > 0:
-            time.sleep(1)
-            if self.paused:  # Timer duraklatıldıysa bekle
-                continue
-            self.remaining -= 1
-
-            # Widget'ın hala mevcut olup olmadığını kontrol edin
-            if not self.winfo_exists():
-                break
-
-            # Timer'ı güncelle
-            self.timer_label.configure(text=self.format_time(self.remaining))
-
-            # Slider'ı güncelle
-            self.seek_slider.set(self.duration - self.remaining)
-
-        # Timer bittiğinde
-        if self.remaining <= 0 and self.running:
-            self.running = False
-            self.start_pause_btn.configure(text="▶️ Başlat")
-            self.end_session()  # Meditasyon bittiğinde sıfırlama işlemini çağır
-
-    def end_session(self):
-        """Meditasyon bittiğinde timer ve slider'ı sıfırla."""
-        self.running = False
-        pygame.mixer.music.stop()  # Müziği durdur
-        self.remaining = 0  # Timer'ı sıfırla
-        self.timer_label.configure(text=self.format_time(self.remaining))  # Timer'ı güncelle
-        self.seek_slider.set(0)  # Slider'ı sıfırla
-        self.start_pause_btn.configure(text="▶️ Başlat")  # Butonu başlat durumuna getir
 
     def start_or_pause_meditation(self):
         if not self.running:
@@ -380,3 +358,22 @@ class MeditationScreen(BaseScreen):
             new_time = min(self.duration, self.seek_slider.get() + 10)  # 10 saniye ileri sar
             self.seek_slider.set(new_time)
             self.seek_audio(new_time)
+
+    def add_to_favorites(self, seans):
+        """Seçilen ses dosyasını favorilere ekler."""
+        favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
+        favorites = []
+
+        # Favoriler dosyasını yükle
+        if os.path.exists(favorites_file):
+            with open(favorites_file, "r", encoding="utf-8") as file:
+                favorites = json.load(file)
+
+        # Eğer ses dosyası zaten favorilerde yoksa ekle
+        if seans["ses_dosyasi"] not in favorites:
+            favorites.append(seans["ses_dosyasi"])
+            with open(favorites_file, "w", encoding="utf-8") as file:
+                json.dump(favorites, file, ensure_ascii=False, indent=4)
+            print(f"{seans['ses_dosyasi']} favorilere eklendi!")
+        else:
+            print(f"{seans['ses_dosyasi']} zaten favorilerde!")

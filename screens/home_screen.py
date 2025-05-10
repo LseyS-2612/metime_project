@@ -86,12 +86,12 @@ class HomeScreen(BaseScreen):
         # Buton isimleri ve işlevleri
         buttons = [
             ("Günlük Meditasyon", self.start_daily_meditation),
+            ("Favoriler", lambda: self.master.show_favorites()),  # Favoriler butonu
             ("İndirilenler", self.show_downloadable_audio),
             ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: self.show_sleep_sessions()),
             ("Meydan Okuma", self.show_challenge_courses),
             ("Acil Durum", lambda: self.show_emergency_meditations()),
-            ("Favoriler", lambda: print("Favoriler")),
             ("Kurslar", self.show_course_categories),
         ]
 
@@ -789,3 +789,26 @@ class HomeScreen(BaseScreen):
         else:
             print(f"Ses dosyası bulunamadı: {audio_path}")
             messagebox.showerror("Hata", f"Ses dosyası bulunamadı: {audio_path}")
+
+    def show_favorites(self):
+        """Favorilere eklenen ses dosyalarını gösterir."""
+        from tkinter import messagebox
+
+        # Favoriler dosyasını yükle
+        favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
+        if not os.path.exists(favorites_file):
+            messagebox.showinfo("Bilgi", "Henüz favorilere eklenmiş bir ses dosyası yok.")
+            return
+
+        with open(favorites_file, "r", encoding="utf-8") as file:
+            favorites = json.load(file)
+
+        # Yeni bir pencere oluştur
+        favorites_window = ctk.CTkToplevel(self)
+        favorites_window.title("Favoriler")
+        favorites_window.geometry("400x300")
+
+        # Favori ses dosyalarını listele
+        for audio_file in favorites:
+            audio_label = ctk.CTkLabel(favorites_window, text=audio_file, font=("Arial", 12))
+            audio_label.pack(pady=5)

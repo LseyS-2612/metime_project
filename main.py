@@ -56,6 +56,10 @@ class MeditationApp(ctk.CTk):
     def show_settings(self):
         self.show_screen(SettingsScreen, self.show_home)
 
+    def show_favorites(self):
+        """Favoriler ekranını açar."""
+        self.show_screen(MeditationScreen, self.show_home, {"ses_dosyasi": "favorites"})
+
 
 if __name__ == "__main__":
     app = MeditationApp()
