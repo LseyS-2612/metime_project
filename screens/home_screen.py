@@ -1,16 +1,13 @@
 import customtkinter as ctk
 import json
 import random
-from utils.data_manager import load_meditation_data, update_streak, load_settings , load_audio_files,start_daily_meditation
-from PIL import Image, ImageTk, ImageDraw, ImageOps, ImageEnhance
+from utils.data_manager import load_meditation_data, load_settings , load_audio_files,start_daily_meditation
+from PIL import Image, ImageDraw, ImageOps, ImageEnhance
 import os
 import datetime
 from screens.profile_screen import ProfileScreen
-from screens.settings_screen import SettingsScreen
-from screens.quotes_screen import QuotesScreen
 import pygame
 from screens.base_screen import BaseScreen
-from screens.show_courses_screen import CoursesScreen
 from screens.sessions_screen import SessionsScreen
 from screens.challenges_screen import ChallengesScreen
 from screens.timer_screen import TimerScreen
@@ -158,6 +155,38 @@ class HomeScreen(BaseScreen):
         else:
             return "İyi Geceler!"
 
+    # Tekrarlanan işlevleri birleştiren yardımcı metod
+    def show_section_screen(self, section_name, screen_class):
+        """Belirli bir bölüm için ekran gösterir."""
+        try:
+            # "courses.json" dosyasını yükle
+            base_dir = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
+
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            # Belirtilen bölümü bul
+            section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == section_name), None)
+
+            if section:
+                # İlgili ekranı aç
+                self.master.show_screen(screen_class, self.master.show_home, section)
+            else:
+                # Hataları loglama sistemine kaydet
+                self.log_error(f"'{section_name}' bölümü bulunamadı!")
+
+        except FileNotFoundError:
+            self.log_error("courses.json dosyası bulunamadı!")
+
+    # Basit loglama sistemi
+    def log_error(self, message):
+        """Hata mesajlarını loglar."""
+        # Gerçek bir log dosyasına yazma işlemi eklenebilir
+        # Örneğin: logging.error(message)
+        pass  # Şimdilik hiçbir şey yapma
+
+    # Optimize edilmiş quotes yükleme
     def load_quotes(self):
         """JSON dosyasından sözleri yükler."""
         try:
@@ -167,10 +196,20 @@ class HomeScreen(BaseScreen):
             with open(file_path, "r", encoding="utf-8") as file:
                 return json.load(file)
         except FileNotFoundError:
-            print("quotes.json dosyası bulunamadı!")
+            self.log_error("quotes.json dosyası bulunamadı!")
             return []
 
+    # Ses çalma işlemi için optimize edilmiş metod
+    def play_audio(self, seans):
+        audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
+        audio_path = os.path.join(audio_dir, seans["ses_dosyasi"])
 
+        if os.path.exists(audio_path):
+            # pygame.mixer.init() ana uygulamada bir kez çağrılmalı
+            pygame.mixer.music.load(audio_path)
+            pygame.mixer.music.play()
+        else:
+            self.log_error(f"Ses dosyası bulunamadı: {audio_path}")
 
     def load_background_images(self):
         """Arka plan resimlerini yükler."""
@@ -194,25 +233,7 @@ class HomeScreen(BaseScreen):
 
     def show_sleep_sessions(self):
         """'Uyku' butonuna tıklandığında 'Uyku İçin Meditasyon' seanslarını gösterir."""
-        try:
-            # "courses.json" dosyasını yükle
-            base_dir = os.path.dirname(__file__)
-            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
-
-            with open(file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-            # "Uyku İçin Meditasyon" bölümünü bul
-            sleep_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Uyku İçin Meditasyon"), None)
-
-            if sleep_section:
-                # "SessionsScreen" ekranını aç
-                self.master.show_screen(SessionsScreen, self.master.show_home, sleep_section)
-            else:
-                print("'Uyku İçin Meditasyon' bölümü bulunamadı!")
-
-        except FileNotFoundError:
-            print("courses.json dosyası bulunamadı!")
+        self.show_section_screen("Uyku İçin Meditasyon", SessionsScreen)
 
     def update_quote(self):
         """Sözleri ve arka planı rastgele seç ve etiketi güncelle."""
@@ -252,19 +273,6 @@ class HomeScreen(BaseScreen):
         rounded_image.putalpha(mask)
         return rounded_image
 
-    def play_audio(self, seans):
-        audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
-        audio_path = os.path.join(audio_dir, seans["ses_dosyasi"])
-
-        if os.path.exists(audio_path):
-            duration = self.get_audio_duration(audio_path)
-            print(f"Ses dosyasının süresi: {duration} saniye")
-            pygame.mixer.init()
-            pygame.mixer.music.load(audio_path)
-            pygame.mixer.music.play()
-        else:
-            print(f"Ses dosyası bulunamadı: {audio_path}")
-
     def get_audio_duration(self,audio_path):
         pygame.mixer.init()
         sound = pygame.mixer.Sound(audio_path)
@@ -276,8 +284,6 @@ class HomeScreen(BaseScreen):
         self.master.show_home()
 
     def start_meditation(self, seans):
-        """Meditasyonu başlatır."""
-        print(f"{seans['isim']} meditasyonu başlıyor!")
         self.go_meditation(seans)
 
     def show_timer_screen(self):
@@ -394,25 +400,7 @@ class HomeScreen(BaseScreen):
 
     def show_emergency_meditations(self):
         """Acil durum meditasyonlarını gösterir."""
-        try:
-            # "courses.json" dosyasını yükle
-            base_dir = os.path.dirname(__file__)
-            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
-
-            with open(file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-            # "Acil Durum Meditasyonları" bölümünü bul
-            emergency_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Acil Durum Meditasyonları"), None)
-
-            if emergency_section:
-                # "EmergencyScreen" ekranını aç
-                self.master.show_screen(EmergencyScreen, self.master.show_home, emergency_section)
-            else:
-                print("'Acil Durum Meditasyonları' bölümü bulunamadı!")
-
-        except FileNotFoundError:
-            print("courses.json dosyası bulunamadı!")
+        self.show_section_screen("Acil Durum Meditasyonları", EmergencyScreen)
 
     def show_quotes_screen(self):
         """Quotes ekranını gösterir."""
@@ -424,25 +412,7 @@ class HomeScreen(BaseScreen):
     
     def show_challenge_courses(self):
         """Meydan okuma kurslarını göstermek için ChallengesScreen'i açar."""
-        try:
-            # "courses.json" dosyasını yükle
-            base_dir = os.path.dirname(__file__)
-            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
-
-            with open(file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-            # "Meydan Okumalar" bölümünü bul
-            challenge_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Meydan Okumalar"), None)
-
-            if challenge_section:
-                # "ChallengesScreen" ekranını aç
-                self.master.show_screen(ChallengesScreen, self.master.show_home, challenge_section)
-            else:
-                print("'Meydan Okumalar' bölümü bulunamadı!")
-
-        except FileNotFoundError:
-            print("courses.json dosyası bulunamadı!")
+        self.show_section_screen("Meydan Okumalar", ChallengesScreen)
 
     def show_favorites(self):
         """Favori meditasyonları gösterir."""

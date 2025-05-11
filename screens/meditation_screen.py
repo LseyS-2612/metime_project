@@ -254,10 +254,7 @@ class MeditationScreen(BaseScreen):
             pygame.mixer.init()
             pygame.mixer.music.load(audio_path)
             pygame.mixer.music.play()
-            print(f"{audio_file} çalınıyor...")
-        else:
-            print(f"Ses dosyası bulunamadı: {audio_path}")
-
+        
     def get_audio_name_from_courses(self, audio_path):
         """Ses dosyasına karşılık gelen ismi courses.json dosyasından alır."""
         course_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "courses.json"))
@@ -341,13 +338,11 @@ class MeditationScreen(BaseScreen):
                 if self.audio_path:
                     pygame.mixer.music.load(self.audio_path)
                     pygame.mixer.music.play(start=self.current_position)  # Kaldığı yerden başlat
-                    print(f"Ses dosyası {self.current_position} saniyeden başlatıldı")  # Debug için
                 else:
                     ctk.CTkLabel(self, text="⚠️ Ses dosyası bulunamadı!", font=("Arial", 14, "bold"), fg_color="red").pack(pady=10)
                     return
             else:
                 pygame.mixer.music.unpause()  # Eğer duraklatılmışsa devam ettir
-                print("Ses dosyası devam ettiriliyor")  # Debug için
 
             # Timer thread'i başlat
             threading.Thread(target=self.run_timer, daemon=True).start()
@@ -360,7 +355,6 @@ class MeditationScreen(BaseScreen):
             self.start_time = time.time() - self.elapsed_time
             
             pygame.mixer.music.unpause()  # Meditasyon sesini devam ettir
-            print("Ses dosyası devam ettiriliyor")  # Debug için
         else:
             # Devam ediyorsa duraklat
             self.paused = True
@@ -372,7 +366,6 @@ class MeditationScreen(BaseScreen):
             self.current_position = self.elapsed_time  # Geçen süreyi pozisyon olarak kullan
             
             pygame.mixer.music.pause()  # Meditasyon sesini duraklat
-            print(f"Duraklatıldı, konum: {self.current_position:.3f} saniye")  # Debug için
 
 
     def cleanup(self):
@@ -436,11 +429,9 @@ class MeditationScreen(BaseScreen):
         """Seçilen seansın ses dosyasını döndürür ve süresini hesaplar."""
         audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
         audio_path = os.path.join(audio_dir, seans["ses_dosyasi"])
-        print(f"Ses dosyası yolu: {audio_path}")  # Debug için
         if os.path.exists(audio_path):
             self.duration = self.get_audio_duration(audio_path)  # Süreyi otomatik olarak al
             return audio_path
-        print("Ses dosyası bulunamadı!")  # Debug için
         return None  # Ses dosyası bulunamazsa None döndür
 
     def get_audio_duration(self, audio_path):
@@ -455,11 +446,6 @@ class MeditationScreen(BaseScreen):
         """Saniyeyi dakika:saniye formatına dönüştürür."""
         m, s = divmod(seconds, 60)
         return f"{int(m):02}:{int(s):02}"
-
-    def end_session(self):
-        self.running = False
-        pygame.mixer.music.stop()
-        self.timer_label.configure(text="⏳ Süre Bitti")
 
     def stop_and_return(self):
         """Meditasyon ekranını kapat ve ana ekrana dön."""
@@ -517,22 +503,18 @@ class MeditationScreen(BaseScreen):
                 data = json.load(file)
                 self.background_sounds = data.get("sounds", [])
                 self.background_sounds_names = [sound["name"] for sound in self.background_sounds]
-        else:
-            print("background_sounds.json dosyası bulunamadı!")
-
+        
     def select_audio_file(self, selection):
         """Seçilen ses dosyasını ayarlar."""
         for sound in self.background_sounds:
             if sound["name"] == selection:
                 audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio", "Arka Plan Sesleri"))
                 self.selected_audio_path = os.path.join(audio_dir, sound["file"])
-                print(f"Seçilen ses dosyası: {self.selected_audio_path}")
                 break
 
     def toggle_audio_playback(self):
         """Seçilen ses dosyasını başlatır veya durdurur."""
         if not self.selected_audio_path or not os.path.exists(self.selected_audio_path):
-            print("Ses dosyası bulunamadı!")
             return
 
         if self.audio_playing:
@@ -544,7 +526,6 @@ class MeditationScreen(BaseScreen):
             pygame.mixer.Channel(2).play(sound, loops=-1)  # loops=-1 sonsuz döngü anlamına gelir
             self.audio_play_pause_btn.configure(text="⏸️")  # Durdur ikonuna geç
             self.audio_playing = True
-            print(f"Arkaplan sesi başlatıldı ve sürekli çalacak: {self.selected_audio_path}")
 
     def change_audio_volume(self, value):
         """Ses dosyasının ses seviyesini değiştirir."""
