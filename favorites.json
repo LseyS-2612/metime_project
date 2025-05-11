@@ -7,6 +7,18 @@
         {
             "isim": "Görselleştirme",
             "ses_dosyasi": "Uyku İçin Meditasyon/uyku_icin_meditasyon-3.mp3"
+        },
+        {
+            "isim": "Günlük Meditasyon",
+            "ses_dosyasi": "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-10.mp3"
+        },
+        {
+            "isim": "Günlük Meditasyon",
+            "ses_dosyasi": "Büyük Düşünürlerle Meditasyon/büyük_düsünürlerle_meditasyon-2.mp3"
+        },
+        {
+            "isim": "Günlük Meditasyon",
+            "ses_dosyasi": "Meditasyona Giriş/meditasyona_giris-5.mp3"
         }
     ]
 }

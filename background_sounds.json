@@ -1,0 +1,20 @@
+{
+    "sounds": [
+        {
+            "name": "Yağmur",
+            "file": "rain.mp3"
+        },
+        {
+            "name": "Dalga",
+            "file": "sea.mp3"
+        },
+        {
+            "name": "Şömine",
+            "file": "fireplace.mp3"
+        },
+        {
+            "name": "Orman",
+            "file": "forest.mp3"
+        }
+    ]
+}

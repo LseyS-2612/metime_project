@@ -20,6 +20,12 @@ class MeditationApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         pygame.mixer.init()  # Uygulama başlatıldığında bir kez başlat
+        self.json_cache = {}  # JSON dosyalarını önbelleğe almak için bir sözlük
+        self.load_all_json_files()  # JSON dosyalarını önceden yükle
+
+        self.audio_cache = {}  # Ses dosyalarını önbelleğe almak için bir sözlük
+        self.preload_audio_files()
+
         # Pencere ayarları  
         self.title("MeTime")
         self.geometry("600x800")
@@ -94,6 +100,32 @@ class MeditationApp(ctk.CTk):
     def show_timer_screen(self):
         """Zamanlayıcı ekranını gösterir."""
         self.show_screen(TimerScreen, self.show_home)
+
+    def load_all_json_files(self):
+        """Tüm JSON dosyalarını önceden yükler."""
+        base_dir = os.path.dirname(__file__)
+        json_files = ["favorites.json", "background_sounds.json", "courses.json"]
+        for json_file in json_files:
+            file_path = os.path.join(base_dir, json_file)
+            if os.path.exists(file_path):
+                with open(file_path, "r", encoding="utf-8") as file:
+                    self.json_cache[json_file] = json.load(file)
+
+    def get_cached_json(self, file_name):
+        """Önbellekten JSON dosyasını alır."""
+        return self.json_cache.get(file_name, {})
+
+    def preload_audio_files(self):
+        """Ses dosyalarını önceden yükler."""
+        audio_dir = os.path.join(os.path.dirname(__file__), "audio")
+        for file_name in os.listdir(audio_dir):
+            file_path = os.path.join(audio_dir, file_name)
+            if os.path.isfile(file_path):
+                self.audio_cache[file_name] = pygame.mixer.Sound(file_path)
+
+    def get_cached_audio(self, file_name):
+        """Önbellekten ses dosyasını alır."""
+        return self.audio_cache.get(file_name)
 
 
 if __name__ == "__main__":
