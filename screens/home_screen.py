@@ -10,6 +10,13 @@ from screens.settings_screen import SettingsScreen
 from screens.quotes_screen import QuotesScreen
 import pygame
 from screens.base_screen import BaseScreen
+from screens.show_courses_screen import CoursesScreen
+from screens.sessions_screen import SessionsScreen
+from screens.challenges_screen import ChallengesScreen
+from screens.timer_screen import TimerScreen
+from screens.emergency_screen import EmergencyScreen
+from screens.favorites_screen import FavoritesScreen    
+from screens.downloads_screen import DownloadsScreen
 
 
 class HomeScreen(BaseScreen):
@@ -61,7 +68,7 @@ class HomeScreen(BaseScreen):
             fg_color="#212121",
             hover_color="#312e33"
         )
-        profile_btn.place(x=500, y=10)  # Streak ile ayarlar arasında yerleştirildi
+        profile_btn.place(x=500, y=10)  # Streak ile ayarlar arasında yerleştir
 
         # Ayarlar butonu
         settings_btn = ctk.CTkButton(
@@ -86,13 +93,13 @@ class HomeScreen(BaseScreen):
         # Buton isimleri ve işlevleri
         buttons = [
             ("Günlük Meditasyon", self.start_daily_meditation),
-            ("Favoriler", lambda: self.master.show_favorites()),  # Favoriler butonu
-            ("İndirilenler", self.show_downloadable_audio),
+            ("Meditasyon İndir", self.show_downloads),
             ("Zamanlayıcı", self.show_timer_screen),
             ("Uyku", lambda: self.show_sleep_sessions()),
             ("Meydan Okuma", self.show_challenge_courses),
             ("Acil Durum", lambda: self.show_emergency_meditations()),
-            ("Kurslar", self.show_course_categories),
+            ("Favoriler", lambda: self.show_favorites()),
+            ("Kurslar", lambda: self.master.show_courses()),
         ]
 
         # 3 satır ve 2 sütun düzeni
@@ -116,7 +123,6 @@ class HomeScreen(BaseScreen):
             width=500,
             height=150,
             fg_color=self.cget("fg_color"),  # Temadaki genel arka plan rengini kullan
-            corner_radius=50  # Köşeleri yuvarlat
         )
         self.quote_frame.place(relx=0.5, rely=0.75, anchor="center")  # Daha yukarı taşımak için rely değerini azalttık
 
@@ -187,29 +193,9 @@ class HomeScreen(BaseScreen):
         start_daily_meditation(load_audio_files, self.master.show_screen, self.master.show_home)
 
     def show_sleep_sessions(self):
-        """'Uyku' butonuna tıklandığında 'Uyku İçin Meditasyon' bölümündeki seansları gösterir."""
-        # Önce mevcut içerikleri temizle
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        # Geri dönüş butonu
-        back_btn = ctk.CTkButton(
-            self,
-            text="⬅️",
-            width=40,
-            height=40,
-            command=self.load_home_screen,  # Ana ekrana dönmek için
-            fg_color="#212121",
-            hover_color="#312e33"
-        )
-        back_btn.place(x=10, y=10)
-
-        # Seanslar için bir çerçeve
-        sessions_frame = ctk.CTkFrame(self)
-        sessions_frame.place(relx=0.5, rely=0.2, anchor="n")
-
-        # "Uyku İçin Meditasyon" bölümünü yükle
+        """'Uyku' butonuna tıklandığında 'Uyku İçin Meditasyon' seanslarını gösterir."""
         try:
+            # "courses.json" dosyasını yükle
             base_dir = os.path.dirname(__file__)
             file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
 
@@ -220,26 +206,13 @@ class HomeScreen(BaseScreen):
             sleep_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Uyku İçin Meditasyon"), None)
 
             if sleep_section:
-                # 2x10 düzeni
-                for i, seans in enumerate(sleep_section["seanslar"]):
-                    row = i // 2
-                    col = i % 2
-                    session_btn = ctk.CTkButton(
-                        sessions_frame,
-                        text=f"{seans['isim']}",
-                        command=lambda s=seans: self.start_meditation(s),
-                        width=200,
-                        height=50,
-                        font=("Times New Roman", 12, "bold"),
-                    )
-                    session_btn.grid(row=row, column=col, padx=10, pady=10)
+                # "SessionsScreen" ekranını aç
+                self.master.show_screen(SessionsScreen, self.master.show_home, sleep_section)
             else:
                 print("'Uyku İçin Meditasyon' bölümü bulunamadı!")
 
         except FileNotFoundError:
             print("courses.json dosyası bulunamadı!")
-
-
 
     def update_quote(self):
         """Sözleri ve arka planı rastgele seç ve etiketi güncelle."""
@@ -253,9 +226,8 @@ class HomeScreen(BaseScreen):
             enhancer = ImageEnhance.Brightness(image)
             darkened_image = enhancer.enhance(0.5)  # Parlaklığı %50 azalt
 
-            # Yuvarlak köşeli hale getir
-            rounded_image = self.make_rounded_image(darkened_image, (500, 150))
-            ctk_image = ctk.CTkImage(rounded_image, size=(500, 150))  # CTkImage kullanımı
+            # Yuvarlak köşe işlemi kaldırıldı, resmi doğrudan kullanıyoruz
+            ctk_image = ctk.CTkImage(darkened_image, size=(500, 150))  # CTkImage kullanımı
 
             # Arka plan resmini çerçeveye uygula
             self.quote_label.configure(image=ctk_image, text="")  # Resmi göster
@@ -266,7 +238,7 @@ class HomeScreen(BaseScreen):
                 text=f'"{random_quote["quote"]}"\n\n- {random_quote["author"]}',
                 font=("Verdana", 16, "bold"),
                 compound="center"  # Resim ve metni birleştir
-            )
+        )
         # 10 saniye sonra tekrar güncelle
         self.after(100000, self.update_quote)
 
@@ -279,101 +251,6 @@ class HomeScreen(BaseScreen):
         rounded_image = ImageOps.fit(image, size, centering=(0.5, 0.5))
         rounded_image.putalpha(mask)
         return rounded_image
-
-    def show_course_categories(self):
-        """'Kurslar' butonuna tıklandığında bölümleri 2x10 düzeninde gösterir."""
-        # Önce mevcut içerikleri temizle
-        menu_frame = ctk.CTkFrame(self, height=60, fg_color="#343434")
-        menu_frame.pack(side="top", fill="x")
-        
-
-
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        # Geri dönüş butonu (sol üst köşede ikon olarak)
-        back_btn = ctk.CTkButton(
-            self,
-            text="⬅️",  # Geri dönüş ikonu
-            width=40,
-            height=40,
-            command=self.load_home_screen,  # Ana ekrana dönmek için
-            fg_color="#212121",  # Arka plan rengi
-            hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
-        )
-        back_btn.place(x=10, y=10)  # Sol üst köşeye yerleştir
-
-        # Kurslar için bir çerçeve
-        courses_frame = ctk.CTkFrame(self)
-        courses_frame.place(relx=0.5, rely=0.2, anchor="n")  # Çerçeveyi ortala
-
-        courses_frame = ctk.CTkFrame(
-            self,
-            fg_color=self.cget("fg_color"),  # Ana pencerenin arka plan rengini kullan
-            corner_radius=20  # Köşeleri yuvarlat
-        )
-
-        courses_frame.place(relx=0.5, rely=0.2, anchor="n")  # Çerçeveyi ortala
-        # Bölümleri yükle
-        try:
-            base_dir = os.path.dirname(__file__)
-            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
-
-            with open(file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-            # 2x10 düzeni
-            for i, bölüm in enumerate(data["Bölümler"]):
-                row = i // 2
-                col = i % 2
-                category_btn = ctk.CTkButton(
-                    courses_frame,
-                    text=bölüm["isim"],
-                    command=lambda b=bölüm: self.show_sessions(b),
-                    width=200,
-                    height=50,
-                    font=("Times New Roman", 12, "bold"),
-
-                )
-                category_btn.grid(row=row, column=col, padx=10, pady=10)
-
-        except FileNotFoundError:
-            print("courses.json dosyası bulunamadı!")
-
-    def show_sessions(self, bölüm):
-        """Seçilen bölümdeki seansları 2x10 düzeninde gösterir."""
-        # Önce mevcut içerikleri temizle
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        # Geri dönüş butonu
-        back_btn = ctk.CTkButton(
-            self,
-            text="⬅️",
-            width=40,
-            height=40,
-            command=self.show_course_categories,
-            fg_color="#212121",
-            hover_color="#312e33"
-        )
-        back_btn.place(x=10, y=10)
-        # Seanslar için bir çerçeve
-        sessions_frame = ctk.CTkFrame(self)
-        sessions_frame.place(relx=0.5, rely=0.5, anchor="center")  # Çerçeveyi ortala
-
-        # 2x10 düzeni
-        for i, seans in enumerate(bölüm["seanslar"]):
-            row = i // 2
-            col = i % 2
-            session_btn = ctk.CTkButton(
-            sessions_frame,
-            text=f"{seans['isim']}",
-            command=lambda s=seans: self.start_meditation(s),
-            width=200,
-            height=50,
-            font=("Times New Roman", 12, "bold"),
-            )
-            session_btn.grid(row=row, column=col, padx=10, pady=10)
 
     def play_audio(self, seans):
         audio_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "audio"))
@@ -405,53 +282,7 @@ class HomeScreen(BaseScreen):
 
     def show_timer_screen(self):
         """Zamanlayıcı ekranını gösterir."""
-        # Önce mevcut içerikleri temizle
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        # Geri dönüş butonu (sol üst köşede ikon olarak)
-        back_btn = ctk.CTkButton(
-            self,
-            text="⬅️",  # Geri dönüş ikonu
-            width=40,
-            height=40,
-            command=self.load_home_screen,  # Ana ekrana dönmek için
-            fg_color="#212121",  # Arka plan rengi
-            hover_color="#312e33"  # Üzerine gelindiğinde renk değişimi
-        )
-        back_btn.place(x=10, y=10)  # Sol üst köşeye yerleştir
-
-        # Zamanlayıcı başlığı
-        timer_label = ctk.CTkLabel(
-            self,
-            text="Zamanlayıcı Kur",
-            font=("Helvetica", 20, "bold"),
-            text_color="#FFFFFF"
-        )
-        timer_label.place(relx=0.5, rely=0.2, anchor="center")
-
-        # Süre seçimi için giriş alanı
-        time_entry = ctk.CTkEntry(
-            self,
-            placeholder_text="Süreyi dakika olarak girin",
-            width=200,
-            height=40
-        )
-        time_entry.place(relx=0.5, rely=0.4, anchor="center")
-
-        # Zamanlayıcıyı başlatma butonu
-        button_colors = self.get_timer_button_color()  # Temaya uygun renkler al
-        start_btn = ctk.CTkButton(
-            self,
-            text="Başlat",
-            command=lambda: self.start_timer(time_entry.get()),
-            width=100,
-            height=40,
-            fg_color=button_colors["fg_color"],  # Temaya uygun renk
-            hover_color=button_colors["hover_color"],
-            corner_radius=20  
-        )
-        start_btn.place(relx=0.5, rely=0.5, anchor="center")
+        self.master.show_screen(TimerScreen, self.master.show_home)
 
     def start_timer(self, minutes):
         """Zamanlayıcıyı başlatır."""
@@ -562,38 +393,9 @@ class HomeScreen(BaseScreen):
         self.master.current_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def show_emergency_meditations(self):
-        """Acil durumlar için meditasyon seçeneklerini gösterir."""
-        # Önce mevcut içerikleri temizle
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        # Geri dönüş butonu
-        back_btn = ctk.CTkButton(
-            self,
-            text="⬅️",
-            width=40,
-            height=40,
-            command=self.load_home_screen,  # Ana ekrana dönmek için
-            fg_color="#212121",
-            hover_color="#312e33"
-        )
-        back_btn.place(x=10, y=10)
-
-        # Başlık
-        title_label = ctk.CTkLabel(
-            self,
-            text="Acil Durum Meditasyonları",
-            font=("Helvetica", 20, "bold"),
-            text_color="#FFFFFF"
-        )
-        title_label.place(relx=0.5, rely=0.2, anchor="center")
-
-        # Seçenekler için bir çerçeve
-        options_frame = ctk.CTkFrame(self)
-        options_frame.place(relx=0.5, rely=0.4, anchor="n")
-
-        # JSON dosyasını yükle
+        """Acil durum meditasyonlarını gösterir."""
         try:
+            # "courses.json" dosyasını yükle
             base_dir = os.path.dirname(__file__)
             file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
 
@@ -604,19 +406,8 @@ class HomeScreen(BaseScreen):
             emergency_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Acil Durum Meditasyonları"), None)
 
             if emergency_section:
-                # 2x2 düzeni
-                for i, seans in enumerate(emergency_section["seanslar"]):
-                    row = i // 2
-                    col = i % 2
-                    option_btn = ctk.CTkButton(
-                        options_frame,
-                        text=seans["isim"],
-                        command=lambda s=seans: self.start_meditation(s),  # Seçilen meditasyonu başlat
-                        width=200,
-                        height=50,
-                        font=("Times New Roman", 12, "bold"),
-                    )
-                    option_btn.grid(row=row, column=col, padx=10, pady=10)
+                # "EmergencyScreen" ekranını aç
+                self.master.show_screen(EmergencyScreen, self.master.show_home, emergency_section)
             else:
                 print("'Acil Durum Meditasyonları' bölümü bulunamadı!")
 
@@ -632,38 +423,9 @@ class HomeScreen(BaseScreen):
 
     
     def show_challenge_courses(self):
-        """Meydan Okuma ekranını gösterir."""
-        # Önce mevcut içerikleri temizle
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        # Geri dönüş butonu
-        back_btn = ctk.CTkButton(
-            self,
-            text="⬅️",
-            width=40,
-            height=40,
-            command=self.load_home_screen,  # Ana ekrana dönmek için
-            fg_color="#212121",
-            hover_color="#312e33"
-        )
-        back_btn.place(x=10, y=10)
-
-        # Başlık
-        title_label = ctk.CTkLabel(
-            self,
-            text="Meydan Okuma Kursları",
-            font=("Helvetica", 20, "bold"),
-            text_color="#FFFFFF"
-        )
-        title_label.place(relx=0.5, rely=0.2, anchor="center")
-
-        # Kurslar için bir çerçeve
-        courses_frame = ctk.CTkFrame(self)
-        courses_frame.place(relx=0.5, rely=0.3, anchor="n")
-
-        # JSON dosyasını yükle
+        """Meydan okuma kurslarını göstermek için ChallengesScreen'i açar."""
         try:
+            # "courses.json" dosyasını yükle
             base_dir = os.path.dirname(__file__)
             file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
 
@@ -674,141 +436,18 @@ class HomeScreen(BaseScreen):
             challenge_section = next((bölüm for bölüm in data["Bölümler"] if bölüm["isim"] == "Meydan Okumalar"), None)
 
             if challenge_section:
-                # 2x2 düzeni
-                for i, seans in enumerate(challenge_section["seanslar"]):
-                    row = i // 2
-                    col = i % 2
-                    session_btn = ctk.CTkButton(
-                        courses_frame,
-                        text=seans["isim"],
-                        command=lambda s=seans: self.start_meditation(s),
-                        width=200,
-                        height=50,
-                        font=("Times New Roman", 12, "bold"),
-                    )
-                    session_btn.grid(row=row, column=col, padx=10, pady=10)
+                # "ChallengesScreen" ekranını aç
+                self.master.show_screen(ChallengesScreen, self.master.show_home, challenge_section)
             else:
                 print("'Meydan Okumalar' bölümü bulunamadı!")
 
         except FileNotFoundError:
             print("courses.json dosyası bulunamadı!")
-            
-    
-    def show_downloadable_audio(self):
-        """İndirilebilir ses dosyalarını gösterir ve indirme işlemini gerçekleştirir."""
-        import shutil
-        from tkinter import filedialog, messagebox
-
-        # Önce mevcut içerikleri temizle
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        # Geri dönüş butonu
-        back_btn = ctk.CTkButton(
-            self,
-            text="⬅️",
-            width=40,
-            height=40,
-            command=self.load_home_screen,  # Ana ekrana dönmek için
-            fg_color="#212121",
-            hover_color="#312e33"
-        )
-        back_btn.place(x=10, y=10)
-
-        # Başlık
-        title_label = ctk.CTkLabel(
-            self,
-            text="İndirilebilir Ses Dosyaları",
-            font=("Helvetica", 20, "bold"),
-            text_color="#FFFFFF"
-        )
-        title_label.place(relx=0.5, rely=0.2, anchor="center")
-
-        # Ses dosyalarını listelemek için bir çerçeve
-        audio_frame = ctk.CTkFrame(self)
-        audio_frame.place(relx=0.5, rely=0.3, anchor="n")
-
-        # JSON dosyasını yükle
-        try:
-            base_dir = os.path.dirname(__file__)
-            file_path = os.path.abspath(os.path.join(base_dir, "..", "courses.json"))
-
-            with open(file_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-            # Tüm bölümleri ve seansları listele
-            row = 0
-            for bölüm in data["Bölümler"]:
-                for seans in bölüm["seanslar"]:
-                    # Seans ismi
-                    session_label = ctk.CTkLabel(
-                        audio_frame,
-                        text=seans["isim"],
-                        font=("Times New Roman", 12, "bold"),
-                        text_color="#FFFFFF"
-                    )
-                    session_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
-
-                    # İndir butonu
-                    download_btn = ctk.CTkButton(
-                        audio_frame,
-                        text="İndir",
-                        command=lambda s=seans: self.download_audio(s),
-                        width=100,
-                        height=30,
-                        font=("Times New Roman", 10, "bold"),
-                    )
-                    download_btn.grid(row=row, column=1, padx=10, pady=5)
-                    row += 1
-
-        except FileNotFoundError:
-            print("courses.json dosyası bulunamadı!")
-            messagebox.showerror("Hata", "courses.json dosyası bulunamadı!")
-
-    def download_audio(self, seans):
-        """Seçilen ses dosyasını indir."""
-        import shutil
-        from tkinter import filedialog, messagebox
-
-        # Ses dosyasının tam yolunu oluştur
-        base_dir = os.path.dirname(__file__)
-        audio_dir = os.path.abspath(os.path.join(base_dir, "..", "audio"))
-        audio_path = os.path.join(audio_dir, seans["ses_dosyasi"])
-
-        if os.path.exists(audio_path):
-            # Kullanıcıdan hedef klasörü seçmesini iste
-            target_dir = filedialog.askdirectory(title="Hedef Klasörü Seçin")
-            if target_dir:
-                try:
-                    # Dosyayı hedef klasöre kopyala
-                    shutil.copy(audio_path, target_dir)
-                    messagebox.showinfo("Başarılı", f"{seans['isim']} başarıyla indirildi!")
-                except Exception as e:
-                    print(f"Dosya indirilemedi: {e}")
-                    messagebox.showerror("Hata", f"Dosya indirilemedi: {e}")
-        else:
-            print(f"Ses dosyası bulunamadı: {audio_path}")
-            messagebox.showerror("Hata", f"Ses dosyası bulunamadı: {audio_path}")
 
     def show_favorites(self):
-        """Favorilere eklenen ses dosyalarını gösterir."""
-        from tkinter import messagebox
+        """Favori meditasyonları gösterir."""
+        self.master.show_screen(FavoritesScreen, self.master.show_home)
 
-        # Favoriler dosyasını yükle
-        favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
-        if not os.path.exists(favorites_file):
-            messagebox.showinfo("Bilgi", "Henüz favorilere eklenmiş bir ses dosyası yok.")
-            return
-
-        with open(favorites_file, "r", encoding="utf-8") as file:
-            favorites = json.load(file)
-
-        # Yeni bir pencere oluştur
-        favorites_window = ctk.CTkToplevel(self)
-        favorites_window.title("Favoriler")
-        favorites_window.geometry("400x300")
-
-        # Favori ses dosyalarını listele
-        for audio_file in favorites:
-            audio_label = ctk.CTkLabel(favorites_window, text=audio_file, font=("Arial", 12))
-            audio_label.pack(pady=5)
+    def show_downloads(self):
+        """İndirilen meditasyonları gösterir."""
+        self.master.show_screen(DownloadsScreen, self.master.show_home)

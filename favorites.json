@@ -1,7 +1,12 @@
-[
-    "Uyku İçin Meditasyon/uyku_icin_meditasyon-3.mp3",
-    "Meditasyona Giriş/meditasyona_giris-3.mp3",
-    "Vücut Tarama Meditasyonu/vucut_tarama_meditasyonu-6.mp3",
-    "Büyük Düşünürlerle Meditasyon/büyük_düsünürlerle_meditasyon-5.mp3",
-    "Stres ve Kaygı İçin Meditasyon/stress_ve_kaygı_için_meditasyon-6.mp3"
-]
+{
+    "seanslar": [
+        {
+            "isim": "3. Meditasyon Nedir?",
+            "ses_dosyasi": "Meditasyona Giriş/meditasyona_giris-3.mp3"
+        },
+        {
+            "isim": "Görselleştirme",
+            "ses_dosyasi": "Uyku İçin Meditasyon/uyku_icin_meditasyon-3.mp3"
+        }
+    ]
+}

@@ -9,6 +9,9 @@ class SettingsScreen(BaseScreen):
 
         self.go_back = go_back
 
+        # Temaya uygun renkleri al
+        button_colors = self.get_button_colors()
+
         # Geri dönüş butonu
         back_btn = ctk.CTkButton(
             self,
@@ -16,8 +19,8 @@ class SettingsScreen(BaseScreen):
             width=40,
             height=40,
             command=self.go_back,  # Geri dönüş fonksiyonu
-            fg_color="#212121",
-            hover_color="#312e33"
+            fg_color=button_colors["fg_color"],  # Temaya uygun renk
+            hover_color=button_colors["hover_color"]  # Temaya uygun hover rengi
         )
         back_btn.place(x=10, y=10)
 
@@ -67,15 +70,14 @@ class SettingsScreen(BaseScreen):
         self.theme_option.place(relx=0.5, rely=0.55, anchor="center")
 
         # Kaydet butonu
-        save_btn_color = self.get_save_button_color()  # Temaya uygun renk al
         save_btn = ctk.CTkButton(
             self,
             text="Kaydet",
             command=self.save_settings,
             width=150,
             height=40,
-            fg_color=save_btn_color["fg_color"],
-            hover_color=save_btn_color["hover_color"]
+            fg_color=button_colors["fg_color"],  # Temaya uygun renk
+            hover_color=button_colors["hover_color"]  # Temaya uygun hover rengi
         )
         save_btn.place(relx=0.5, rely=0.65, anchor="center")
 
@@ -99,8 +101,8 @@ class SettingsScreen(BaseScreen):
 
         self.go_back()  # Geri dön
 
-    def get_save_button_color(self):
-        """Temaya uygun kaydet butonu renklerini döndürür."""
+    def get_button_colors(self):
+        """Temaya uygun buton renklerini döndürür."""
         theme = self.get_theme()
         if theme == "Purple & Gray":
             return {"fg_color": "#6A0DAD", "hover_color": "#40145C"}  # Mor tonları

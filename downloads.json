@@ -1,0 +1,12 @@
+{
+    "seanslar": [
+        {
+            "isim": "Rahatlama Meditasyonu",
+            "ses_dosyasi": "indirilenler/rahatlama.mp3"
+        },
+        {
+            "isim": "Odaklanma Meditasyonu",
+            "ses_dosyasi": "indirilenler/odaklanma.mp3"
+        }
+    ]
+}

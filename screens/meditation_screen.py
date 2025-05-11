@@ -32,7 +32,6 @@ class MeditationScreen(BaseScreen):
 
     def setup_meditation_screen(self, seans):
         """Meditasyon ekranını hazırlar."""
-
         # Varsayılan süreyi başlat
         self.duration = 0  # Varsayılan olarak 0 saniye
         self.remaining = 0  # Geri sayım için süre
@@ -44,6 +43,14 @@ class MeditationScreen(BaseScreen):
         self.audio_path = self.get_audio_path(seans)
         if self.audio_path:
             self.remaining = self.duration  # Süreyi geri sayım için ayarla
+
+        # Favoriler dosyasını kontrol et
+        favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
+        is_favorite = False
+        if os.path.exists(favorites_file):
+            with open(favorites_file, "r", encoding="utf-8") as file:
+                favorites = json.load(file)
+                is_favorite = seans in favorites["seanslar"]
 
         # 1. Dosyanın adı (klasör adı)
         audio_folder_name = os.path.basename(os.path.dirname(self.audio_path)) if self.audio_path else "Bilinmiyor"
@@ -86,7 +93,7 @@ class MeditationScreen(BaseScreen):
         # Favorilere Ekle/Çıkar butonu
         self.add_to_favorites_btn = ctk.CTkButton(
             self,
-            text="⭐ Favorilere Ekle",
+            text="⭐ Favorilerden Çıkar" if is_favorite else "⭐ Favorilere Ekle",
             command=lambda: self.add_to_favorites(seans),
             width=200,
             height=40
@@ -398,9 +405,9 @@ class MeditationScreen(BaseScreen):
             self.seek_audio(new_time)
 
     def add_to_favorites(self, seans):
-        """Seçilen ses dosyasını favorilere ekler veya çıkarır."""
+        """Seçilen seansı favorilere ekler veya çıkarır ve butonun metnini günceller."""
         favorites_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "favorites.json"))
-        favorites = []
+        favorites = {"seanslar": []}
 
         # Favoriler dosyasını yükle
         if os.path.exists(favorites_file):
@@ -408,13 +415,15 @@ class MeditationScreen(BaseScreen):
                 favorites = json.load(file)
 
         # Favorilere ekleme veya çıkarma işlemi
-        if seans["ses_dosyasi"] in favorites:
-            favorites.remove(seans["ses_dosyasi"])
+        if seans in favorites["seanslar"]:
+            favorites["seanslar"].remove(seans)
             with open(favorites_file, "w", encoding="utf-8") as file:
                 json.dump(favorites, file, ensure_ascii=False, indent=4)
-            messagebox.showinfo("Favoriler", f"{seans['ses_dosyasi']} favorilerden çıkarıldı!")
+            messagebox.showinfo("Favoriler", f"{seans['isim']} favorilerden çıkarıldı!")
+            self.add_to_favorites_btn.configure(text="⭐ Favorilere Ekle")  # Buton metnini güncelle
         else:
-            favorites.append(seans["ses_dosyasi"])
+            favorites["seanslar"].append(seans)
             with open(favorites_file, "w", encoding="utf-8") as file:
                 json.dump(favorites, file, ensure_ascii=False, indent=4)
-            messagebox.showinfo("Favoriler", f"{seans['ses_dosyasi']} favorilere eklendi!")
+            messagebox.showinfo("Favoriler", f"{seans['isim']} favorilere eklendi!")
+            self.add_to_favorites_btn.configure(text="⭐ Favorilerden Çıkar")  # Buton metnini güncellem
